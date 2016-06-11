@@ -1,17 +1,20 @@
-/*
-*MyProg, created by James Phillips <james@jamesphillipsuk.com> on 3rd March 2016
+/**
+* MyProg, created by James Phillips <james@jamesphillipsuk.com> on 3rd March 2016
 *
-*MyProg is a terminal application text-editor, designed to be used on UNIX-like systems.
-*Copyright (C) 2016 James Phillips.
+* MyProg is a terminal application text-editor, designed to be used on UNIX-like systems.
+* Copyright (C) 2016 James Phillips.
 *
-*Created on: 03/04/2016
-*Edited on: 03/04/2016
-*Edited on: 04/04/2016
-*Edited on: 05/04/2016
-*Edited on: 06/04/2016
-*Edited on: 09/04/2016
-*Edited on: 10/04/2016
-*/
+* Created on: 03/04/2016
+* Edited on: 03/04/2016
+* Edited on: 04/04/2016
+* Edited on: 05/04/2016
+* Edited on: 06/04/2016
+* Edited on: 09/04/2016
+* Edited on: 10/04/2016
+* Edited on: 07/06/2016
+* Edited on: 08/06/2016
+* Edited on: 11/06/2016
+**/
 
 #include <stdio.h>			/*I/O Library*/
 #include <stdlib.h>			/*Standard (File Handling) Library*/
@@ -23,11 +26,17 @@
 int copyproc()				/*Displays copyright notice*/
 {
 	CLEAR();
-	printf("MyProg, created by James Phillips <james@jamesphillipsuk.com> on 3rd March 2016\n\nMyProg is a terminal application text-editor, designed to be used on UNIX-like systems.\n\n");
+	printf("╔══════════════════════════════════════════════════════════════════════════════╗\n");
+	printf("║                                    MyProg                                    ║\n");
+	printf("╚══════════════════════════════════════════════════════════════════════════════╝\n");
+	printf("╔══════════════════════════════════════════════════════════════════════════════╗\n");
+	printf("MyProg, created by James Phillips <james@jamesphillipsuk.com> on 3rd March 2016\n\nMyProg is a terminal-based text-editor, designed to for *nix systems.\n\n");
 	printf("This program is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version 3 of the License, or\n(at your option) any later version.\n\n");
 	printf("This program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\n");
 	printf("You should have received a copy of the GNU General Public License\nalong with this program.  If not, see <http://www.gnu.org/licenses/>.\n\n");
 	printf("Press ENTER to agree to these terms, or CTRL+BACKLASH to quit.");
+	printf("\033[24;0H╚══════════════════════════════════════════════════════════════════════════════╝");
+	
 }
 
 int drawproc1()				/*Draws design for screen one*/
@@ -44,7 +53,7 @@ int drawproc1()				/*Draws design for screen one*/
 		printf("║                                                                              ║\n");
 	}
 	printf("╚══════════════════════════════════════════════════════════════════════════════╝");
-	printf("\033[5;2H Welcome to MyProg: the C-based text-editor designed for UNIX-like systems.\033[6;2H Designed and made by James Phillips.");
+	printf("\033[5;2H Welcome to MyProg Public Alpha 2!\033[6;2H MyProg: the C-based text-editor designed for UNIX-like systems.\033[7;2H Designed and made by James Phillips.");
 	return 0;
 }
 
@@ -88,13 +97,8 @@ int saveproc1(char Src[1024], char Dest[1024])
 		printf("Error opening file!\n");
 		exit(1);
 	}
-
-	/* print some text */
-	char text[] = "You have saved a blank file.  Content has been created for you.";
-	fprintf(f, "%s", text);
-
+	fprintf(f,"");
 	fclose(f);
-	/**/
 	printf("\033[11;26H Press [ENTER] to continue. ");
 	return 0;
 }
@@ -143,11 +147,11 @@ int saveproc3 (char Dest[2048])
 		CharCopy = fgetc (c);
 		if (CharCopy == EOF)
 		{
-			break;	
+			break;
 		}
 		else
 		{
-			putc (CharCopy, f);
+			fputc (CharCopy, f);
 		}
 	}
 	printf ("Success!\n%s\n%s", Dest, ReDest);
