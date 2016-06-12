@@ -14,6 +14,7 @@
 * Edited on: 07/06/2016
 * Edited on: 08/06/2016
 * Edited on: 11/06/2016
+* Edited on: 12/06/2016
 **/
 
 #include <stdio.h>			/*I/O Library*/
@@ -39,34 +40,34 @@ int copyproc()				/*Displays copyright notice*/
 	
 }
 
-int drawproc1()				/*Draws design for screen one*/
+int drawintroproc()				/*Draws design for the introductory screen*/
 {
-	int cnt = 0;
+	int Cnt = 0;
 
 	CLEAR();
 	printf("╔══════════════════════════════════════════════════════════════════════════════╗\n");
 	printf("║                                    MyProg                                    ║\n");
 	printf("╚══════════════════════════════════════════════════════════════════════════════╝\n");
 	printf("╔══════════════════════════════════════════════════════════════════════════════╗\n");
-	for (cnt = 0;cnt < 19; ++ cnt)	/*Loop: I'm too lazy to draw an 80 char x20 char box*/
+	for (Cnt = 0;Cnt < 19; ++ Cnt)	/*Loop: I'm too lazy to draw an 80 char x20 char box*/
 	{
 		printf("║                                                                              ║\n");
 	}
 	printf("╚══════════════════════════════════════════════════════════════════════════════╝");
-	printf("\033[5;2H Welcome to MyProg Public Alpha 2!\033[6;2H MyProg: the C-based text-editor designed for UNIX-like systems.\033[7;2H Designed and made by James Phillips.");
+	printf("\033[5;2H Welcome to MyProg Public Alpha 2.1!\033[6;2H MyProg: the C-based text-editor designed for UNIX-like systems.\033[7;2H Designed and made by James Phillips.");
 	return 0;
 }
 
-int drawproc2()
+int drawmainproc() /*Draws the main page of the program*/
 {
-	int cnt = 0;
+	int Cnt = 0;
 
 	CLEAR();
 	printf("\033[0;0H╔══════════════════════════════════════════════════════════════════════════════╗\n");
 	printf("║                                    MyProg                                    ║\n");
 	printf("╚══════════════════════════════════════════════════════════════════════════════╝\n");
 	printf("╔══════════════════════════════════════════════════════════════════════════════╗\n");
-	for (cnt = 0;cnt < 19; ++ cnt)
+	for (Cnt = 0;Cnt < 19; ++ Cnt)
 	{
 		printf("                                                                                \n");
 	}
@@ -75,7 +76,7 @@ int drawproc2()
 	return 0;
 }
 
-int saveproc1(char Src[1024], char Dest[1024])
+int saveinitproc(char Src[1024], char Dest[1024]) /*Initial save, This creates the file to reserve it for later*/
 {
 	int cnt = 0;
 	const char Pwd[] = "./\0";	/*Holds "./", UNIX present working directory*/
@@ -103,14 +104,14 @@ int saveproc1(char Src[1024], char Dest[1024])
 	return 0;
 }
 
-int saveproc2 (char Dest[2048], char Buffer[])
+int saveindevproc (char Dest[2048], char Buffer[]) /*Saves content to a .indev file*/
 {
 	char ReDest [2048] = "\0";
 
 	strcpy (ReDest, Dest);
 	strcat ( ReDest, ".indev");
-
 	FILE *f = fopen(ReDest, "a");
+	
 	if (f == NULL)
 	{
 		printf("Error opening file!\n");
@@ -122,16 +123,16 @@ int saveproc2 (char Dest[2048], char Buffer[])
 	return 0;
 }
 
-int saveproc3 (char Dest[2048])
+int savefinalproc (char Dest[2048]) /*Saves the final file when the editing is complete*/
 {
 	char ReDest [2048] = "\0";
 	char CharCopy;
-
+	int Remover;
 	strcpy (ReDest, Dest);
 	strcat ( ReDest, ".indev");
-
 	FILE *c = fopen (ReDest, "r");
 	FILE *f = fopen (Dest, "a");
+
 	if (f == NULL)
 	{
 		printf("Error opening file! %s\n", Dest);
@@ -154,9 +155,20 @@ int saveproc3 (char Dest[2048])
 			fputc (CharCopy, f);
 		}
 	}
-	printf ("Success!\n%s\n%s", Dest, ReDest);
 	fclose(c);
 	fclose(f);
+	
+	Remover = remove(ReDest);
+	if(Remover == 0) 
+	{
+		printf(".indev file successfully removed");
+	}
+	else 
+	{
+		printf("Error: unable to remove .indev file");
+	}
+
+	printf ("Success!\n%s\n%s", Dest, ReDest);
 	return 0;
 }
 
@@ -166,9 +178,9 @@ int textproc()
 	char Buffer [2048] = "\0";
 	char Src[1024], Dest[1024];	/*Used to set destination for saving*/
 
-	saveproc1(Src, Dest);
+	saveinitproc(Src, Dest);
 	getchar();
-	drawproc2();
+	drawmainproc();
 	for (;;)
 	{
 		memset(Buffer, '\0', strlen(Buffer));
@@ -179,7 +191,7 @@ int textproc()
 		if (Buffer[0] == '\n')
 		{
 			ConsecutiveEnterCount++;
-			if (ConsecutiveEnterCount >= 2)
+			if (ConsecutiveEnterCount >= 1)
 			{
 				break;
 			}
@@ -187,11 +199,11 @@ int textproc()
 		else
 		{
 			ConsecutiveEnterCount = 0;
-			saveproc2(Dest, Buffer);
+			saveindevproc(Dest, Buffer);
 		}
 	}
-	saveproc3(Dest);
-	drawproc1();
+	savefinalproc(Dest);
+	drawmainproc();
 	printf ("\033[10;25HThank you for using MyProg!\n\033[11;27HPress [ENTER] to close.");
 	return 0;
 }
@@ -200,7 +212,7 @@ void main (void)
 {
 	copyproc();
 	getchar();
-	drawproc1();
+	drawintroproc();
 	textproc();
 	getchar();
 	CLEAR();
