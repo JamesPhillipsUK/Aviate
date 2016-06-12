@@ -1,0 +1,11 @@
+2016-06-12 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Added more comments, streamlined code, and renamed some functions to make code editing simpler.
+	Updated version no to Public Alpha 2.1.
+
+	*CHANGELOG: File added and documented recent changes.
+
+2016-06-11 James Phillips <james@jamesphillipsuk.com>
+	* main.c: Fixed issue with sentence appearing at the start of the file.
+	Updated version no. to Public Alpha 2.
+
+	*gpl.txt: Deleted unnecessary file.
