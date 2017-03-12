@@ -7,6 +7,7 @@ CFLAGS  = -o
 
 # the build target executable:
 TARGET = /bin/MyProg
+TARGET = /bin/Aviate
 
 all: $(TARGET)
 
