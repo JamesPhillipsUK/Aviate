@@ -98,7 +98,7 @@ bool checkIfFileExists(char (***fileNamePointer)[256])
 void writeFile(char (**fileNamePointer)[256])/*Writes an empty file.*/
 {
   char okayToOverwrite = 'N';
-  if (!checkIfFileExists(*(fileNamePointer + 0 + 0)[0]))
+  if (!checkIfFileExists(&fileNamePointer))
     okayToOverwrite = 'Y';
   else
   {
