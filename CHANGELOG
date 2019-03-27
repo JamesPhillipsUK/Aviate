@@ -1,3 +1,22 @@
+2019-03-27 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Added further code documentation.
+	
+	*CHANGELOG: Documented recent changes.
+
+2018-12-12 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Added functions to handle terminal args.
+
+	*README.md: Rewrote sections on use and bug tracking.
+	
+	*CHANGELOG: Documented recent changes.
+	
+2018-12-11 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Begin total rewrite of the code.
+
+	*main.c.old: Moved legacy code to main.c.old for documentation and reference.
+	
+	*CHANGELOG: Documented recent changes.
+
 2017-03-12 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Altered typo in initial comment block and drawintroproc (The Project started in April, not March).
 	Added errno.h for enhanced error handling, and updated file opening to match.
