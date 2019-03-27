@@ -16,8 +16,9 @@
  * Rewritten: December 2018 - March 2019
 **/
 
-#include <stdio.h>/*I/O Library*/
+#include <stdio.h> /*I/O Library*/
 #include <stdlib.h>/*Standard (File Handling) Library*/
+#include <stdbool.h>/*Standard Boolean Library*/
 #include <string.h>/*String Handling Library*/
 #include <errno.h>/*Error Handling Library*/
 
@@ -82,18 +83,41 @@ void rewriteFile(char (**fileNamePointer)[256])/*This allows the user to edit a 
   /*TODO*/
 }
 
-void writeFile(char (**fileNamePointer)[256])/*Writes an empty file.*/
-{/*TODO: check if the file exists before overwriting it.*/
-  FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "a");
-
-  if (filePointer == NULL)
+bool checkIfFileExists(char (***fileNamePointer)[256])
+{
+  FILE *checkIfOpen = fopen(**(fileNamePointer + 0 + 0)[0], "r");
+  if (checkIfOpen == NULL) /*File does not exist.*/
   {
-    printf("Error opening file: %s!\n", strerror(errno));
-    exit(1);
+    fclose(checkIfOpen);
+    return false;
   }
-  fprintf(filePointer, "%c", '\0');
+  fclose(checkIfOpen);
+  return true;
+}
 
-  fclose(filePointer);
+void writeFile(char (**fileNamePointer)[256])/*Writes an empty file.*/
+{
+  char okayToOverwrite = 'N';
+  if (!checkIfFileExists(*(fileNamePointer + 0 + 0)[0]))
+    okayToOverwrite = 'Y';
+  else
+  {
+    printf("File Already Exists.  Press \"Y\" to overwrite.");
+    okayToOverwrite = getchar();
+  }
+  
+  if (okayToOverwrite == 'Y' || okayToOverwrite == 'y')
+  {
+    FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "a");
+
+    if (filePointer == NULL)
+    {
+      printf("Error opening file: %s!\n", strerror(errno));
+      exit(1);
+    }
+    fprintf(filePointer, "%c", '\0');
+    fclose(filePointer);
+  }
 }
 
 void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePointer)[256])/*Handles what actions are taken when the user selects to read or write a file.*/
@@ -105,8 +129,10 @@ void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePoi
       printCopyrightNotice();
       break;
     case 2:/*Read A File*/
+      CLEAR();
       printFile(&fileNamePointer);
       rewriteFile(&fileNamePointer);
+      CLEARLN();
       break;
     case 3:/*Write a new File*/
       writeFile(&fileNamePointer);

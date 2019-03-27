@@ -1,6 +1,7 @@
 2019-03-27 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Added further code documentation.
 	Fixed some dates.
+	Added overwrite protection to file writing.
 	
 	*CHANGELOG: Documented recent changes.
 
