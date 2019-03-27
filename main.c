@@ -36,6 +36,7 @@ void printUIFrame()/*Prints the UI to the screen.  Title bar at the top, then to
 
 void printUIIntroduction()/*This function prints an intro to Aviate to the screen.*/
 {
+  CLEAR();
   printUIFrame();
   printf("\033[5;26H Welcome to Aviate Alpha 3.0!\033[6;9H Aviate: the C-based text-editor designed for UNIX-like systems.\033[7;30H - by James Phillips.\033[8;19H Donate to me at: paypal.me/JamesPhillipsUK\033[23;27H Press [ENTER] to continue.");
   getchar();
@@ -143,7 +144,6 @@ int main(int argc, char **argv)
 {
   char fileName[256];
 
-  CLEAR();
   printUIIntroduction();
   handleReadWriteOrNothing(readWriteOrNothing(&argc, &argv, &fileName), &fileName);
   return EXIT_SUCCESS;
