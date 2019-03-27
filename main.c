@@ -2,7 +2,7 @@
  * Aviate, created by James Phillips <james@jamesphillipsuk.com> 2016 - 2019.  
  * Aviate is a terminal-based text-editor, designed for *Nix systems.  
  * 
- * Copyright (C) 2016, 2018 James Phillips, Released under the GNU GPL v3.0 or later.
+ * Copyright (C) 2016, 2019 James Phillips, Released under the GNU GPL v3.0 or later.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the License, 
@@ -16,7 +16,7 @@
  * Rewritten: December 2018 - March 2019
 **/
 
-#include <stdio.h> /*I/O Library*/
+#include <stdio.h>/*I/O Library*/
 #include <stdlib.h>/*Standard (File Handling) Library*/
 #include <string.h>/*String Handling Library*/
 #include <errno.h>/*Error Handling Library*/

@@ -1,7 +1,10 @@
 2019-03-27 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Added further code documentation.
+	Fixed some dates.
 	
 	*CHANGELOG: Documented recent changes.
+
+	*.gitignore: Added .gitignore
 
 2018-12-12 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Added functions to handle terminal args.
