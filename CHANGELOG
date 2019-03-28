@@ -1,4 +1,10 @@
-2019-03-27 James Phillips <james@jamesphillipsuk.com>
+2019-03-28 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Added typedef and struct for handling text files, called "textFile".
+	Implemented textFile in printFile() to copy the file to the struct.
+	
+	*CHANGELOG: Documented recent changes.
+	
+	2019-03-27 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Added further code documentation.
 	Fixed some dates.
 	Added overwrite protection to file writing.

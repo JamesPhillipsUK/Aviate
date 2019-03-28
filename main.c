@@ -25,6 +25,13 @@
 #define CLEAR() printf("\e[2J\e[H");/*output keycode to clear UNIX Terminal*/
 #define CLEARLN() printf("\e[2K\r");/*Output keycode to clear one line in UNIX Terminal*/
 
+typedef struct textFile
+{
+  char *text;
+  int length;
+  int cursorPosition;
+} textFile;
+
 void printUIFrame()/*Prints the UI to the screen.  Title bar at the top, then top and bottom boundaries of the content area.*/
 {
   printf("╔══════════════════════════════════════════════════════════════════════════════╗\n");
@@ -62,6 +69,12 @@ void printCopyrightNotice()/*This function prints the copyright/left notice to t
 
 void printFile (char (**fileNamePointer)[256])/*This prints the content of the file called by the user to the screen.*/
 {
+  textFile text;
+  text.length = 0;
+  text.cursorPosition = 0;
+  text.text = (char *) malloc(sizeof(char) * (text.length));
+  text.text[text.length] = '\0';
+
   FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "r");
   char c;
   if (filePointer == NULL)
@@ -74,6 +87,9 @@ void printFile (char (**fileNamePointer)[256])/*This prints the content of the f
   {
     printf("%c", c);
     c = fgetc(filePointer);
+
+    text.text = realloc(text.text, text.length + 1);
+    text.text[text.length + 1] = c;
   }
   fclose(filePointer);
 }
