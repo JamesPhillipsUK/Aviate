@@ -1,3 +1,8 @@
+2019-03-29 James Phillips <james@jamesphillipsuk.com>
+	*main.c: printFile() now uses our textFile, and nothing is printed directly to the screen from the file without being saved in the textFile first.
+	
+	*CHANGELOG: Documented recent changes.
+
 2019-03-28 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Added typedef and struct for handling text files, called "textFile".
 	Implemented textFile in printFile() to copy the file to the struct.

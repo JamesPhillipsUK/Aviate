@@ -69,29 +69,34 @@ void printCopyrightNotice()/*This function prints the copyright/left notice to t
 
 void printFile (char (**fileNamePointer)[256])/*This prints the content of the file called by the user to the screen.*/
 {
-  textFile text;
-  text.length = 0;
+  textFile text;/*Create a textFile variable*/
+  text.length = 1;/*We're going to initialise it with one char*/
   text.cursorPosition = 0;
-  text.text = (char *) malloc(sizeof(char) * (text.length));
-  text.text[text.length] = '\0';
+  text.text = (char *) malloc(sizeof(char) * (text.length));/*Allocate memory space for one char*/
+  text.text[text.length] = '\0';/*Null char to initialise it.*/
 
-  FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "r");
+  FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "r");/*Read the file*/
   char c;
-  if (filePointer == NULL)
+  if (filePointer == NULL)/*If it can't access or find the file*/
   {
     printf("Error opening file: %s!\n", strerror(errno));
-    exit(0);
+    exit(0);/*Throw it.*/
   }
-  c = fgetc(filePointer);
-  while (c != EOF)
+  
+  while (c != EOF)/*Read the file to the textFile text.*/
   {
-    printf("%c", c);
     c = fgetc(filePointer);
-
     text.text = realloc(text.text, text.length + 1);
     text.text[text.length + 1] = c;
+    text.length++;
   }
-  fclose(filePointer);
+  text.cursorPosition = 0;/*Point to the start of the file.*/
+  while (text.length > text.cursorPosition)/*Read through one char at a time.*/
+  {
+    printf("%c", text.text[text.cursorPosition]);
+    text.cursorPosition++;
+  }
+  fclose(filePointer);/*Save the computer, close the file.*/
 }
 
 void rewriteFile(char (**fileNamePointer)[256])/*This allows the user to edit a pre-existing file.*/
@@ -148,7 +153,7 @@ void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePoi
       CLEAR();
       printFile(&fileNamePointer);
       rewriteFile(&fileNamePointer);
-      CLEARLN();
+      CLEAR();
       break;
     case 3:/*Write a new File*/
       writeFile(&fileNamePointer);
