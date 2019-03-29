@@ -159,6 +159,7 @@ void writeFile(char (**fileNamePointer)[256])/*Writes an empty file.*/
 
 void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePointer)[256])/*Handles what actions are taken when the user selects to read or write a file.*/
 {
+  textFile text; /*Create a textFile variable*/
   switch(readWriteOrNothingOutput)
   {
     case 1:/*No extra Args*/
@@ -167,14 +168,12 @@ void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePoi
       break;
     case 2:/*Read A File*/
       CLEAR();
-      textFile text; /*Create a textFile variable*/
       printFile(&fileNamePointer, &text);
       rewriteFile(&fileNamePointer, &text);
       CLEAR();
       break;
     case 3:/*Write a new File*/
       CLEAR();
-      textFile text;
       writeFile(&fileNamePointer);
       rewriteFile(&fileNamePointer, &text);
       break;
