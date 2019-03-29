@@ -69,11 +69,6 @@ void printCopyrightNotice()/*This function prints the copyright/left notice to t
 
 void printFile (char (**fileNamePointer)[256], textFile *text)/*This prints the content of the file called by the user to the screen.*/
 {
-  text->length = 1;/*We're going to initialise it with one char*/
-  text->cursorPosition = 0;
-  text->text = (char *) malloc(sizeof(char) * (text->length));/*Allocate memory space for one char*/
-  text->text[text->length] = '\0';/*Null char to initialise it.*/
-
   FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "r");/*Read the file*/
   char c;
   if (filePointer == NULL)/*If it can't access or find the file*/
@@ -100,16 +95,40 @@ void printFile (char (**fileNamePointer)[256], textFile *text)/*This prints the 
 
 void saveFile(char (***fileNamePointer)[256], textFile **text)
 {
-  /*TODO*/
+  FILE *filePointer = fopen(**(fileNamePointer + 0 + 0)[0], "w");
+  if (filePointer == NULL)
+  {
+    printf("Error opening file: %s!\n", strerror(errno));
+    exit(1);
+  }
+  text[0]->cursorPosition = 0;/*Point to the start of the file.*/
+  while (text[0]->length > text[0]->cursorPosition) /*Read through one char at a time.*/
+  {
+    if (text[0]->text[text[0]->cursorPosition] != '\0')
+      fprintf(filePointer, "%c", text[0]->text[text[0]->cursorPosition]);
+    text[0]->cursorPosition++;
+  }
+  fclose(filePointer);
 }
 
 void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the user to edit a pre-existing file.*/
 {
   for(;;)
   {
+    text->cursorPosition = 0;
+    char c[] = {'H','e','l','l','o',',',' ','W','o','r','l','d','!','\0'};
+    text->text = realloc(text->text, text->length + sizeof(c));
+    int count = 0;
+    while (count <= sizeof(c))
+    {
+      text->text[text->cursorPosition] = c[count];
+      text->length++;
+      text->cursorPosition++;
+      count++;
+    }
     /*TODO*/
     /*This is where we do the text editing*/
-    /*We need a break condition.*/
+    /*We also need a break condition.*/
     break;
   }
   saveFile(&fileNamePointer, &text);
@@ -157,9 +176,18 @@ void writeFile(char (**fileNamePointer)[256])/*Writes an empty file.*/
   }
 }
 
+void initialiseTextFile(textFile *text)
+{
+  text->length = 1;/*We're going to initialise it with one char*/
+  text->cursorPosition = 0;
+  text->text = (char *) malloc(sizeof(char) * (text->length));/*Allocate memory space for one char*/
+  text->text[text->length] = '\0';/*Null char to initialise it.*/
+}
+
 void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePointer)[256])/*Handles what actions are taken when the user selects to read or write a file.*/
 {
   textFile text; /*Create a textFile variable*/
+  initialiseTextFile(&text);
   switch(readWriteOrNothingOutput)
   {
     case 1:/*No extra Args*/

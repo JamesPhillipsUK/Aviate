@@ -5,6 +5,9 @@
 	Done the same for when writing a file.
 	Created function saveFile() for saving a file.  Not yet implemented.
 	Began to frame out how rewriteFile() will be used.
+	Added initialiseTextFile() to ensure the structure which holds our file is always initialised and stop any malloc()ing bugs.
+	saveFile() now uses write access.
+	rewriteFile() now writes text to the file.  For now, it just writes "Hello, World!" - but that'll change soon.
 
 	*CHANGELOG: Documented recent changes.
 
