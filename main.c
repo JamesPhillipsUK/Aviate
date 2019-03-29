@@ -67,13 +67,12 @@ void printCopyrightNotice()/*This function prints the copyright/left notice to t
   getchar();
 }
 
-void printFile (char (**fileNamePointer)[256])/*This prints the content of the file called by the user to the screen.*/
+void printFile (char (**fileNamePointer)[256], textFile *text)/*This prints the content of the file called by the user to the screen.*/
 {
-  textFile text;/*Create a textFile variable*/
-  text.length = 1;/*We're going to initialise it with one char*/
-  text.cursorPosition = 0;
-  text.text = (char *) malloc(sizeof(char) * (text.length));/*Allocate memory space for one char*/
-  text.text[text.length] = '\0';/*Null char to initialise it.*/
+  text->length = 1;/*We're going to initialise it with one char*/
+  text->cursorPosition = 0;
+  text->text = (char *) malloc(sizeof(char) * (text->length));/*Allocate memory space for one char*/
+  text->text[text->length] = '\0';/*Null char to initialise it.*/
 
   FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "r");/*Read the file*/
   char c;
@@ -86,22 +85,34 @@ void printFile (char (**fileNamePointer)[256])/*This prints the content of the f
   while (c != EOF)/*Read the file to the textFile text.*/
   {
     c = fgetc(filePointer);
-    text.text = realloc(text.text, text.length + 1);
-    text.text[text.length + 1] = c;
-    text.length++;
+    text->text = realloc(text->text, text->length + 1);
+    text->text[text->length + 1] = c;
+    text->length++;
   }
-  text.cursorPosition = 0;/*Point to the start of the file.*/
-  while (text.length > text.cursorPosition)/*Read through one char at a time.*/
+  text->cursorPosition = 0;/*Point to the start of the file.*/
+  while (text->length > text->cursorPosition)/*Read through one char at a time.*/
   {
-    printf("%c", text.text[text.cursorPosition]);
-    text.cursorPosition++;
+    printf("%c", text->text[text->cursorPosition]);
+    text->cursorPosition++;
   }
   fclose(filePointer);/*Save the computer, close the file.*/
 }
 
-void rewriteFile(char (**fileNamePointer)[256])/*This allows the user to edit a pre-existing file.*/
+void saveFile(char (***fileNamePointer)[256], textFile **text)
 {
   /*TODO*/
+}
+
+void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the user to edit a pre-existing file.*/
+{
+  for(;;)
+  {
+    /*TODO*/
+    /*This is where we do the text editing*/
+    /*We need a break condition.*/
+    break;
+  }
+  saveFile(&fileNamePointer, &text);
 }
 
 bool checkIfFileExists(char (***fileNamePointer)[256])
@@ -139,6 +150,11 @@ void writeFile(char (**fileNamePointer)[256])/*Writes an empty file.*/
     fprintf(filePointer, "%c", '\0');
     fclose(filePointer);
   }
+  else
+  {
+    printf("Error: Could not overwrite file.!\n");
+    exit(1);
+  }
 }
 
 void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePointer)[256])/*Handles what actions are taken when the user selects to read or write a file.*/
@@ -151,12 +167,16 @@ void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePoi
       break;
     case 2:/*Read A File*/
       CLEAR();
-      printFile(&fileNamePointer);
-      rewriteFile(&fileNamePointer);
+      textFile text; /*Create a textFile variable*/
+      printFile(&fileNamePointer, &text);
+      rewriteFile(&fileNamePointer, &text);
       CLEAR();
       break;
     case 3:/*Write a new File*/
+      CLEAR();
+      textFile text;
       writeFile(&fileNamePointer);
+      rewriteFile(&fileNamePointer, &text);
       break;
     default:/*Unknown Command*/
       printf("Please provide your command in the format: \"Aviate <operation> <filename>\".  Exiting.\n");
@@ -175,9 +195,9 @@ short readWriteOrNothing(int *argc, char ***argv, char (*fileNamePointer)[256])/
   }
   else if (*argc == 3)
   {
-    if (strcmp(argv[0][1], "Read\0") == 0)
+    if (strcmp(argv[0][1], "Read\0") == 0 || strcmp(argv[0][1], "read\0") == 0)
       returnVal = 2;
-    else if (strcmp(argv[0][1], "Write\0") == 0)
+    else if (strcmp(argv[0][1], "Write\0") == 0 || strcmp(argv[0][1], "write\0") == 0)
       returnVal = 3;
     else
       printf("%s is not a known command.  Try Read or Write.\n", argv[0][1]);

@@ -1,6 +1,11 @@
 2019-03-29 James Phillips <james@jamesphillipsuk.com>
 	*main.c: printFile() now uses our textFile, and nothing is printed directly to the screen from the file without being saved in the textFile first.
-	
+	Aviate now takes argv parameters from the user regardless of whether or not they capitalise the first letter.
+	Moved the declaration of the textFile used when reading a file, so it can be used for altering a file as well.
+	Done the same for when writing a file.
+	Created function saveFile() for saving a file.  Not yet implemented.
+	Began to frame out how rewriteFile() will be used.
+
 	*CHANGELOG: Documented recent changes.
 
 2019-03-28 James Phillips <james@jamesphillipsuk.com>
