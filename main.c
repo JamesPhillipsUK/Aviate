@@ -21,6 +21,8 @@
 #include <stdbool.h>/*Standard Boolean Library*/
 #include <string.h>/*String Handling Library*/
 #include <errno.h>/*Error Handling Library*/
+#include <unistd.h>/*POSIX OS Interaction API Library*/
+#include <ncurses.h>/*NCurses (text editing interface) Library*/
 
 #define CLEAR() printf("\e[2J\e[H");/*output keycode to clear UNIX Terminal*/
 #define CLEARLN() printf("\e[2K\r");/*Output keycode to clear one line in UNIX Terminal*/
@@ -67,7 +69,7 @@ void printCopyrightNotice()/*This function prints the copyright/left notice to t
   getchar();
 }
 
-void printFile (char (**fileNamePointer)[256], textFile *text)/*This prints the content of the file called by the user to the screen.*/
+void getFileContents (char (**fileNamePointer)[256], textFile *text)/*This prints the content of the file called by the user to the screen.*/
 {
   FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "r");/*Read the file*/
   char c;
@@ -83,12 +85,6 @@ void printFile (char (**fileNamePointer)[256], textFile *text)/*This prints the 
     text->text = realloc(text->text, text->length + 1);
     text->text[text->length + 1] = c;
     text->length++;
-  }
-  text->cursorPosition = 0;/*Point to the start of the file.*/
-  while (text->length > text->cursorPosition)/*Read through one char at a time.*/
-  {
-    printf("%c", text->text[text->cursorPosition]);
-    text->cursorPosition++;
   }
   fclose(filePointer);/*Save the computer, close the file.*/
 }
@@ -113,24 +109,25 @@ void saveFile(char (***fileNamePointer)[256], textFile **text)
 
 void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the user to edit a pre-existing file.*/
 {
+  initscr();/*Initialise NCurses.*/
+  cbreak();/*Enable Character-at-a-time input.*/
+  noecho();/*Don't auto-output to the screen.  I'll handle that.*/
+  keypad(stdscr, TRUE);/*Take special key inputs as well.*/
+  refresh();/*Refresh the screen*/
+  move(0,0);
+
+  text->cursorPosition = 0;
+  while (text->length > text->cursorPosition) /*Read through one char at a time.*/
+  {
+    addch(text->text[text->cursorPosition]);
+    text->cursorPosition++;
+  }
   for(;;)
   {
-    text->cursorPosition = 0;
-    char c[] = {'H','e','l','l','o',',',' ','W','o','r','l','d','!','\0'};
-    text->text = realloc(text->text, text->length + sizeof(c));
-    int count = 0;
-    while (count <= sizeof(c))
-    {
-      text->text[text->cursorPosition] = c[count];
-      text->length++;
-      text->cursorPosition++;
-      count++;
-    }
-    /*TODO*/
-    /*This is where we do the text editing*/
-    /*We also need a break condition.*/
+    
     break;
   }
+  endwin();/*Close out NCurses.*/
   saveFile(&fileNamePointer, &text);
 }
 
@@ -196,7 +193,7 @@ void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePoi
       break;
     case 2:/*Read A File*/
       CLEAR();
-      printFile(&fileNamePointer, &text);
+      getFileContents(&fileNamePointer, &text);
       rewriteFile(&fileNamePointer, &text);
       CLEAR();
       break;

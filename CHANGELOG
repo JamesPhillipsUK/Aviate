@@ -1,3 +1,12 @@
+2019-03-31 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Included ncurses.h for the text editing interface.
+	Implemented NCurses in the rewriteFile() function.
+	Renamed printFile() to getFileContents() - it no longer needs to print the file, but it does still need to get the file's contents.
+	Moved file content printing to rewriteFile() as it can do so via NCurses, I'll probably separate this out again later.
+	Removed auto-filling files with Hello World message as I'm preparing to do the function to allow users to write a message.
+
+	*CHANGELOG: Documented recent changes.
+
 2019-03-29 James Phillips <james@jamesphillipsuk.com>
 	*main.c: printFile() now uses our textFile, and nothing is printed directly to the screen from the file without being saved in the textFile first.
 	Aviate now takes argv parameters from the user regardless of whether or not they capitalise the first letter.
