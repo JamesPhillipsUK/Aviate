@@ -26,6 +26,7 @@
 
 #define CLEAR() printf("\e[2J\e[H");/*Output keycode to clear UNIX Terminal*/
 #define CLEARLN() printf("\e[2K\r");/*Output keycode to clear one line in UNIX Terminal*/
+#define CTRL(c) ((c)&037)/*The key modifier for the control key.*/
 
 typedef struct textFile
 {
@@ -56,7 +57,7 @@ void printHowToNotice()/*This function prints the instructions to the screen.*/
 {
   CLEAR();
   printUIFrame();
-  printf("\033[5;26H Welcome to Aviate Alpha 3.0!\033[6;2H To use Aviate, follow these simple instructions, and you'll be on your way:\n 1| To start writing a new file, use the command: \"Aviate Write x.y\" in your\n     Bash terminal.\n 2| To read or write to a pre-existing file, use: \"Aviate Read x.y\".\n 3| Once Aviate has started, to cut your current line of text, use: \"[CTRL]+K\".\n     To paste, use: \"[CTRL]+U\".\n 4| To save your work, use: \"[CTRL]+O\".  To Exit, use \"[CTRL]+X\".\033[23;27H Press [ENTER] to continue.");
+  printf("\033[5;26H Welcome to Aviate Alpha 3.0!\033[6;2H To use Aviate, follow these simple instructions, and you'll be on your way:\n 1| To start writing a new file, use the command: \"Aviate Write x.y\" in your\n     Bash terminal.\n 2| To read or write to a pre-existing file, use: \"Aviate Read x.y\".\n 3| Once Aviate has started, to cut your current line of text, use: \"[CTRL]+K\".\n     To paste, use: \"[CTRL]+U\".\n 4| To save your work, use: \"[F1}\".  To Exit, use \"[F2]\".\033[23;27H Press [ENTER] to continue.");
   getchar();
 }
 
@@ -122,15 +123,49 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
     refresh();
     text->cursorPosition++;
   }
+  text->cursorPosition = text->length - 1;
   for(;;)
   {
-    /*TODO*/
-    break;
-  }
+    bool canBreak = false;
+    int input = getch();
+    switch(input)
+    {
+      case KEY_UP:
+        break;
+      case KEY_DOWN:
+        break;
+      case KEY_LEFT:
+        break;
+      case KEY_RIGHT:
+        break;
+      case KEY_BACKSPACE:
 
+        break;
+      case KEY_F(1):
+        saveFile(&fileNamePointer, &text);
+        /*DEBUG only, print it to screen.  going to have to find a nice way of telling the user they've saved though
+        
+        printw("Savepoint");
+        refresh();*/
+        break;
+      case KEY_F(2):
+        canBreak = true;
+        break;
+      default:
+        addch(input);
+        text->length++;
+        text->text = realloc(text->text, text->length + 1);
+        text->text[text->cursorPosition] = input;
+        text->cursorPosition++;
+        break;
+    }
+    refresh();
+    
+    if (canBreak == true)
+      break;
+  }
   getch();
   endwin();/*Close out NCurses.*/
-  saveFile(&fileNamePointer, &text);
 }
 
 bool checkIfFileExists(char (***fileNamePointer)[256])
