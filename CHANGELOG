@@ -1,4 +1,12 @@
 2019-03-31 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Modified initialiseTextFile() for memory efficiency.
+	Modified rewriteFile() so it doesn't close NCurses and hide our output until we give it a character.
+	Minor alterations to comments and code cleanliness.
+	Modified getFileContents() so it doesn't get null data before the start of the file, or crash at the end.
+
+	*CHANGELOG: Documented recent changes.
+
+2019-03-31 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Included ncurses.h for the text editing interface.
 	Implemented NCurses in the rewriteFile() function.
 	Renamed printFile() to getFileContents() - it no longer needs to print the file, but it does still need to get the file's contents.

@@ -13,7 +13,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  * Initially created: April 2016
- * Rewritten: December 2018 - March 2019
+ * Rewritten: December 2018 - April 2019
 **/
 
 #include <stdio.h> /*I/O Library*/
@@ -24,7 +24,7 @@
 #include <unistd.h>/*POSIX OS Interaction API Library*/
 #include <ncurses.h>/*NCurses (text editing interface) Library*/
 
-#define CLEAR() printf("\e[2J\e[H");/*output keycode to clear UNIX Terminal*/
+#define CLEAR() printf("\e[2J\e[H");/*Output keycode to clear UNIX Terminal*/
 #define CLEARLN() printf("\e[2K\r");/*Output keycode to clear one line in UNIX Terminal*/
 
 typedef struct textFile
@@ -69,7 +69,7 @@ void printCopyrightNotice()/*This function prints the copyright/left notice to t
   getchar();
 }
 
-void getFileContents (char (**fileNamePointer)[256], textFile *text)/*This prints the content of the file called by the user to the screen.*/
+void getFileContents(char (**fileNamePointer)[256], textFile *text)/*This prints the content of the file called by the user to the screen.*/
 {
   FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "r");/*Read the file*/
   char c;
@@ -83,7 +83,7 @@ void getFileContents (char (**fileNamePointer)[256], textFile *text)/*This print
   {
     c = fgetc(filePointer);
     text->text = realloc(text->text, text->length + 1);
-    text->text[text->length + 1] = c;
+    text->text[text->length] = c;
     text->length++;
   }
   fclose(filePointer);/*Save the computer, close the file.*/
@@ -115,18 +115,20 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
   keypad(stdscr, TRUE);/*Take special key inputs as well.*/
   refresh();/*Refresh the screen*/
   move(0,0);
-
   text->cursorPosition = 0;
   while (text->length > text->cursorPosition) /*Read through one char at a time.*/
   {
     addch(text->text[text->cursorPosition]);
+    refresh();
     text->cursorPosition++;
   }
   for(;;)
   {
-    
+    /*TODO*/
     break;
   }
+
+  getch();
   endwin();/*Close out NCurses.*/
   saveFile(&fileNamePointer, &text);
 }
@@ -175,9 +177,9 @@ void writeFile(char (**fileNamePointer)[256])/*Writes an empty file.*/
 
 void initialiseTextFile(textFile *text)
 {
-  text->length = 1;/*We're going to initialise it with one char*/
+  text->length = 0;/*We're going to initialise it with 0 chars*/
   text->cursorPosition = 0;
-  text->text = (char *) malloc(sizeof(char) * (text->length));/*Allocate memory space for one char*/
+  text->text = (char *) malloc(sizeof(char) * (text->length));/*Allocate memory space for 0 chars*/
   text->text[text->length] = '\0';/*Null char to initialise it.*/
 }
 
