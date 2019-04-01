@@ -4,6 +4,7 @@
 	Minor alterations to comments and code cleanliness.
 	Modified getFileContents() so it doesn't get null data before the start of the file, or crash at the end.
 	Implemented input checking to save inputted text to a file - because recognition of the control modifier from NCURSES caused some runtime errors, I'm using F1 and F2 for save and exit respectively.  I've updated this in the How To notice as well.
+	Added Backspace functionality, using NCurses KEY_BACKSPACE and an alternative value which - together - should work for most keyboards.
 
 	*CHANGELOG: Documented recent changes.
 

@@ -26,7 +26,8 @@
 
 #define CLEAR() printf("\e[2J\e[H");/*Output keycode to clear UNIX Terminal*/
 #define CLEARLN() printf("\e[2K\r");/*Output keycode to clear one line in UNIX Terminal*/
-#define CTRL(c) ((c)&037)/*The key modifier for the control key.*/
+
+const int ALT_KEY_BACKSPACE = 127;/*The keycode for Backspace.*/
 
 typedef struct textFile
 {
@@ -128,6 +129,8 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
   {
     bool canBreak = false;
     int input = getch();
+    int y = getcury(stdscr);
+    int x = getcurx(stdscr);
     switch(input)
     {
       case KEY_UP:
@@ -139,7 +142,16 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
       case KEY_RIGHT:
         break;
       case KEY_BACKSPACE:
-
+      case ALT_KEY_BACKSPACE:
+        if(x > 0)
+        {
+          x--;
+          move(y, x);
+          delch();
+          text->cursorPosition--;
+          text->text[text->cursorPosition] = '\0';
+          refresh();
+        }
         break;
       case KEY_F(1):
         saveFile(&fileNamePointer, &text);
