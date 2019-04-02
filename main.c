@@ -143,10 +143,42 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
         }
         break;
       case KEY_DOWN:
+        if (text->cursorPosition < text->length - 80 && mvinch(y + 1, x) != '\0' && !(y >= 24))
+        {
+          y++;
+          move(y, x);
+          text->cursorPosition += 80;
+          refresh();
+        }
         break;
       case KEY_LEFT:
+        if (x > 0)
+          x--;
+        else
+        {
+          y--;
+          x = 79;
+        }
+        move(y, x);
+        text->cursorPosition--;
+        refresh();
         break;
       case KEY_RIGHT:
+        if (text->cursorPosition < text->length && mvinch(y, x + 1) != '\0' && !(x >= 79))
+        {
+          x++;
+          move(y, x);
+          text->cursorPosition++;
+          refresh();
+        }
+        else if(x>=79)
+        {
+          y++;
+          x = 0;
+          move(y, x);
+          text->cursorPosition++;
+          refresh();
+        }
         break;
       case KEY_BACKSPACE:
       case ALT_KEY_BACKSPACE:
@@ -162,10 +194,6 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
         break;
       case KEY_F(1):
         saveFile(&fileNamePointer, &text);
-        /*DEBUG only, print it to screen.  going to have to find a nice way of telling the user they've saved though
-        
-        printw("Savepoint");
-        refresh();*/
         break;
       case KEY_F(2):
         canBreak = true;

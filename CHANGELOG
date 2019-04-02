@@ -1,5 +1,7 @@
 2019-04-02 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Added Up Arrow key functionality, it only works because I re-implemented the enter key so it fills unused space in each line of the terminal with a null character - which are stripped anyway in the saving function.
+	Added Left Arrow Key functionality.  It moves back one space.
+	With the addition of Right and down Arrow Keys, I have now completed the addition of arrow key functionality.
 
 	*CHANGELOG: Documented recent changes.
 	Fixed a typo with the date from yesterday.
