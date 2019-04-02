@@ -25,8 +25,7 @@
 
 #define CLEAR() printf("\e[2J\e[H");/*Output keycode to clear UNIX Terminal*/
 #define CLEARLN() printf("\e[2K\r");/*Output keycode to clear one line in UNIX Terminal*/
-
-const int ALT_KEY_BACKSPACE = 127;/*The alternative keycode for Backspace.*/
+#define  ALT_KEY_BACKSPACE 127/*The alternative keycode for Backspace.*/
 /** textFile will be a structured variable type used for storing text files to edit. **/
 typedef struct textFile
 {

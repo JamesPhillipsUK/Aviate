@@ -3,7 +3,7 @@ CC = gcc
 
 # compiler flags:
 # -o: 
-CFLAGS  = -lncurses -o
+CFLAGS  = -std=gnu11 -lncurses -o
 
 # the build target executable:
 TARGET = /usr/bin/MyProg
