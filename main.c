@@ -100,7 +100,7 @@ void saveFile(char (***fileNamePointer)[256], textFile **text)
     exit(1);
   }
   text[0]->cursorPosition = 0;/*Point to the start of the file.*/
-  while (text[0]->length > text[0]->cursorPosition) /*Read through one char at a time.*/
+  while (text[0]->length - 1 > text[0]->cursorPosition) /*Read through one char at a time.*/
   {
     if (text[0]->text[text[0]->cursorPosition] != '\0')
       fprintf(filePointer, "%c", text[0]->text[text[0]->cursorPosition]);
@@ -109,14 +109,20 @@ void saveFile(char (***fileNamePointer)[256], textFile **text)
   fclose(filePointer);
 }
 
+void addToTextFileStruct(char charToAdd, textFile **text)
+{
+  text[0]->length++;
+  text[0]->text = realloc(text[0]->text, text[0]->length + 1);
+  text[0]->text[text[0]->cursorPosition] = charToAdd;
+  text[0]->cursorPosition++;
+}
+
 void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the user to edit a pre-existing file.*/
 {
   initscr();/*Initialise NCurses.*/
   cbreak();/*Enable Character-at-a-time input.*/
   noecho();/*Don't auto-output to the screen.  I'll handle that.*/
   keypad(stdscr, TRUE);/*Take special key inputs as well.*/
-  refresh();/*Refresh the screen*/
-  move(0,0);
   text->cursorPosition = 0;
   while (text->length > text->cursorPosition) /*Read through one char at a time.*/
   {
@@ -136,8 +142,7 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
       case KEY_UP:
         if (y > 0)
         {
-          y--;
-          move(y, x);
+          move(y - 1, x);
           text->cursorPosition -= 80;
           refresh();
         }
@@ -145,8 +150,7 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
       case KEY_DOWN:
         if (text->cursorPosition < text->length - 80 && mvinch(y + 1, x) != '\0' && !(y >= 24))
         {
-          y++;
-          move(y, x);
+          move(y + 1, x);
           text->cursorPosition += 80;
           refresh();
         }
@@ -166,16 +170,13 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
       case KEY_RIGHT:
         if (text->cursorPosition < text->length && mvinch(y, x + 1) != '\0' && !(x >= 79))
         {
-          x++;
-          move(y, x);
+          move(y, x + 1);
           text->cursorPosition++;
           refresh();
         }
         else if(x>=79)
         {
-          y++;
-          x = 0;
-          move(y, x);
+          move(y + 1, 0);
           text->cursorPosition++;
           refresh();
         }
@@ -184,8 +185,7 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
       case ALT_KEY_BACKSPACE:
         if(x > 0)
         {
-          x--;
-          move(y, x);
+          move(y, x - 1);
           delch();
           text->cursorPosition--;
           text->text[text->cursorPosition] = '\0';
@@ -202,23 +202,18 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
         for (int remainingChars = 79-x; remainingChars > 0; remainingChars--)
         {
           addch('\0');
-          text->length++;
-          text->text = realloc(text->text, text->length + 1);
-          text->text[text->cursorPosition] = '\0';
-          text->cursorPosition++;
+          addToTextFileStruct('\0', &text);
           addch('\n');
-          text->length++;
-          text->text = realloc(text->text, text->length + 1);
-          text->text[text->cursorPosition] = '\n';
-          text->cursorPosition++;
+          addToTextFileStruct('\n', &text);
         }
         break;
       default:
         addch(input);
-        text->length++;
-        text->text = realloc(text->text, text->length + 1);
-        text->text[text->cursorPosition] = input;
-        text->cursorPosition++;
+        if (y == 0 && x == 0)
+        {
+          addToTextFileStruct(input, &text);
+        }
+        addToTextFileStruct(input, &text);
         break;
     }
     refresh();

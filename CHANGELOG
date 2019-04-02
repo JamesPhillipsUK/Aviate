@@ -2,6 +2,9 @@
 	*main.c: Added Up Arrow key functionality, it only works because I re-implemented the enter key so it fills unused space in each line of the terminal with a null character - which are stripped anyway in the saving function.
 	Added Left Arrow Key functionality.  It moves back one space.
 	With the addition of Right and down Arrow Keys, I have now completed the addition of arrow key functionality.
+	Fixed off-by-one error where a corrupted character was saved to the end of the file.
+	Patched error where the first character of a file written in Aviate was deleted upon saving.
+	Added addToTextFileStruct() to add a character to a given textFile.  This saves some lines of code.
 
 	*CHANGELOG: Documented recent changes.
 	Fixed a typo with the date from yesterday.
