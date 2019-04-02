@@ -1,4 +1,10 @@
-2019-03-31 James Phillips <james@jamesphillipsuk.com>
+2019-04-02 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Added Up Arrow key functionality, it only works because I re-implemented the enter key so it fills unused space in each line of the terminal with a null character - which are stripped anyway in the saving function.
+
+	*CHANGELOG: Documented recent changes.
+	Fixed a typo with the date from yesterday.
+
+2019-04-01 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Modified initialiseTextFile() for memory efficiency.
 	Modified rewriteFile() so it doesn't close NCurses and hide our output until we give it a character.
 	Minor alterations to comments and code cleanliness.

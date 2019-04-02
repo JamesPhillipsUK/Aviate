@@ -134,6 +134,13 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
     switch(input)
     {
       case KEY_UP:
+        if (y > 0)
+        {
+          y--;
+          move(y, x);
+          text->cursorPosition -= 80;
+          refresh();
+        }
         break;
       case KEY_DOWN:
         break;
@@ -163,6 +170,21 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
       case KEY_F(2):
         canBreak = true;
         break;
+      case KEY_ENTER:
+        for (int remainingChars = 79-x; remainingChars > 0; remainingChars--)
+        {
+          addch('\0');
+          text->length++;
+          text->text = realloc(text->text, text->length + 1);
+          text->text[text->cursorPosition] = '\0';
+          text->cursorPosition++;
+          addch('\n');
+          text->length++;
+          text->text = realloc(text->text, text->length + 1);
+          text->text[text->cursorPosition] = '\n';
+          text->cursorPosition++;
+        }
+        break;
       default:
         addch(input);
         text->length++;
@@ -176,6 +198,7 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)/*This allows the
     if (canBreak == true)
       break;
   }
+  
   getch();
   endwin();/*Close out NCurses.*/
 }
