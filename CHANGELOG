@@ -7,6 +7,7 @@
 	Added addToTextFileStruct() to add a character to a given textFile.  This saves some lines of code.
 	Did some code cleanup, added even more comments to document the code.  Removed unnecessary includes.
 	Moved ALT_KEY_BACKSPACE from a const int to a #define, as some versions of GCC won't accept it.
+	Stopped fclose()ing file if it's null in checkIfFileExists() - it can cause segfault in some versions of GCC.
 
 	*README: Updated README.
 

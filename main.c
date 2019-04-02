@@ -222,10 +222,7 @@ bool checkIfFileExists(char (***fileNamePointer)[256])
 {
   FILE *checkIfOpen = fopen(**(fileNamePointer + 0 + 0)[0], "r");
   if (checkIfOpen == NULL) /* File does not exist.  Return false. */
-  {
-    fclose(checkIfOpen);
     return false;
-  }
   fclose(checkIfOpen);/* File exists.  Return true. */
   return true;
 }
