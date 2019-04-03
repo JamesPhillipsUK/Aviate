@@ -1,3 +1,89 @@
+2019-04-03 James Phillips <james@jamesphillipsuk.com>
+	*main.c: The bug I patched yesterday (causing the first character of a file to be deleted) was caused by writing to a non-existent memory address.  Although most compilers automatically ignore the this (hence the deletion) some versions of GCC try to write to memory they don't have, causing bugs even with the patch in place.  I removed the patch, identified the cause of the bug, and fixed that instead.
+
+	*CHANGELOG: Documented recent changes.
+	Fixed incorrect date.
+
+2019-04-02 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Added Up Arrow key functionality, it only works because I re-implemented the enter key so it fills unused space in each line of the terminal with a null character - which are stripped anyway in the saving function.
+	Added Left Arrow Key functionality.  It moves back one space.
+	With the addition of Right and down Arrow Keys, I have now completed the addition of arrow key functionality.
+	Fixed off-by-one error where a corrupted character was saved to the end of the file.
+	Patched error where the first character of a file written in Aviate was deleted upon saving.
+	Added addToTextFileStruct() to add a character to a given textFile.  This saves some lines of code.
+	Did some code cleanup, added even more comments to document the code.  Removed unnecessary includes.
+	Moved ALT_KEY_BACKSPACE from a const int to a #define, as some versions of GCC won't accept it.
+	Stopped fclose()ing file if it's null in checkIfFileExists() - it can cause segfault in some versions of GCC.
+
+	*README: Updated README.
+
+	*makefile: added -std flag to ensure the compiler uses the right standards.
+
+	*CHANGELOG: Documented recent changes.
+	Fixed a typo with the date from yesterday.
+	Mass spelling and grammar corrections.
+
+2019-04-01 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Modified initialiseTextFile() for memory efficiency.
+	Modified rewriteFile() so it doesn't close NCurses and hide our output until we give it a character.
+	Minor alterations to comments and code cleanliness.
+	Modified getFileContents() so it doesn't get null data before the start of the file, or crash at the end.
+	Implemented input checking to save inputted text to a file - because recognition of the control modifier from NCurses caused some runtime errors, I'm using F1 and F2 for save and exit respectively.  I've updated this in the How To notice as well.
+	Added Backspace functionality, using NCurses KEY_BACKSPACE and an alternative value which - together - should work for most keyboards.
+
+	*CHANGELOG: Documented recent changes.
+
+2019-03-31 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Included ncurses.h for the text editing interface.
+	Implemented NCurses in the rewriteFile() function.
+	Renamed printFile() to getFileContents() - it no longer needs to print the file, but it does still need to get the file's contents.
+	Moved file content printing to rewriteFile() as it can do so via NCurses, I'll probably separate this out again later.
+	Removed auto-filling files with Hello World message as I'm preparing to do the function to allow users to write a message.
+
+	*CHANGELOG: Documented recent changes.
+
+2019-03-29 James Phillips <james@jamesphillipsuk.com>
+	*main.c: printFile() now uses our textFile, and nothing is printed directly to the screen from the file without being saved in the textFile first.
+	Aviate now takes argv parameters from the user regardless of whether or not they capitalise the first letter.
+	Moved the declaration of the textFile used when reading a file, so it can be used for altering a file as well.
+	Done the same for when writing a file.
+	Created function saveFile() for saving a file.  Not yet implemented.
+	Began to frame out how rewriteFile() will be used.
+	Added initialiseTextFile() to ensure the structure which holds our file is always initialised and stop any malloc()ing bugs.
+	saveFile() now uses write access.
+	rewriteFile() now writes text to the file.  For now, it just writes "Hello, World!" - but that'll change soon.
+
+	*CHANGELOG: Documented recent changes.
+
+2019-03-28 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Added typedef and struct for handling text files, called "textFile".
+	Implemented textFile in printFile() to copy the file to the struct.
+	
+	*CHANGELOG: Documented recent changes.
+	
+	2019-03-27 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Added further code documentation.
+	Fixed some dates.
+	Added overwrite protection to file writing.
+	
+	*CHANGELOG: Documented recent changes.
+
+	*.gitignore: Added .gitignore
+
+2018-12-12 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Added functions to handle terminal args.
+
+	*README.md: Rewrote sections on use and bug tracking.
+	
+	*CHANGELOG: Documented recent changes.
+	
+2018-12-11 James Phillips <james@jamesphillipsuk.com>
+	*main.c: Begin total rewrite of the code.
+
+	*main.c.old: Moved legacy code to main.c.old for documentation and reference.
+	
+	*CHANGELOG: Documented recent changes.
+
 2017-03-12 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Altered typo in initial comment block and drawintroproc (The Project started in April, not March).
 	Added errno.h for enhanced error handling, and updated file opening to match.
@@ -38,7 +124,7 @@
 
 2016-09-26 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Temporarily removed the implementation of testupproc from textproc.
-	Commented on testupproc to plan changes to it's implementation, to function with fgets.
+	Commented on testupproc to plan changes to its implementation, to function with fgets.
 
 	*CHANGELOG: Documented recent changes.
 
@@ -56,7 +142,7 @@
 	*CHANGELOG: Documented recent changes.
 
 2016-09-20 James Phillips <james@jamesphillipsuk.com>
-	*main.c: Wrote testupproc procedure to test for arrow key integration for line-by-line editing.  Unsuccesful experiment.
+	*main.c: Wrote testupproc procedure to test for arrow key integration for line-by-line editing.  Unsuccessful experiment.
 
 	*CHANGELOG: Documented recent changes.
 

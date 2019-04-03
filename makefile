@@ -3,11 +3,13 @@ CC = gcc
 
 # compiler flags:
 # -o: 
-CFLAGS  = -o
+CFLAGS  = -std=gnu11 -lncurses -o
 
 # the build target executable:
-TARGET = /bin/MyProg
-TARGET = /bin/Aviate
+TARGET = /usr/bin/MyProg
+TARGET = /usr/bin/Aviate
+# for development
+# TARGET = ./Aviate
 
 all: $(TARGET)
 

@@ -1,0 +1,8 @@
+# Object files
+*.o
+
+#VS Code files
+.vscode/*
+
+#Test files
+Aviate
