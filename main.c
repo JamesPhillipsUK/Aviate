@@ -72,7 +72,7 @@ void printCopyrightNotice()
 void getFileContents(char (**fileNamePointer)[256], textFile *text)
 {
   FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "r");/* Read the file. */
-  char c;
+  char c = '\0';
   if (filePointer == NULL)/* If it can't access, or find the file: */
   {
     printf("Error opening file: %s!\n", strerror(errno));
@@ -121,13 +121,16 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)
   noecho();/* Don't auto-output to the screen.  I'll handle that. */
   keypad(stdscr, TRUE);/* Take special key inputs as well. */
   text->cursorPosition = 0;
-  while (text->length > text->cursorPosition) /* Read through whatever we've already got in the textFile. */
+  if (text->length != 0)
   {
-    addch(text->text[text->cursorPosition]);/* Put the char on the screen. */
-    refresh();
-    text->cursorPosition++;
+    while (text->length > text->cursorPosition) /* Read through whatever we've already got in the textFile. */
+    {
+      addch(text->text[text->cursorPosition]);/* Put the char on the screen. */
+      refresh();
+      text->cursorPosition++;
+    }
+    text->cursorPosition = text->length - 1;
   }
-  text->cursorPosition = text->length - 1;
   for(;;)/* We'll process text indefinitely, or until this loop is broken out of. */
   {
     bool canBreak = false;/* Used to process text indefinitely, until this value is true. */
@@ -206,8 +209,6 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)
         break;
       default:
         addch(input);/* Add the char to the screen. */
-        if (y == 0 && x == 0)
-          addToTextFileStruct(input, &text);/* Double up the first char to patch an off-by-one error. */
         addToTextFileStruct(input, &text);/* Add the char to the textFile. */
         break;
     }
@@ -217,7 +218,7 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)
   }
   endwin();/* Close out NCurses because we've stopped using it. */
 }
-/** This checks if a given file exists.  and returns true if so. **/
+/** This checks if a given file exists, and returns true if so. **/
 bool checkIfFileExists(char (***fileNamePointer)[256])
 {
   FILE *checkIfOpen = fopen(**(fileNamePointer + 0 + 0)[0], "r");

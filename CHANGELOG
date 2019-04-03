@@ -1,4 +1,9 @@
 2019-04-02 James Phillips <james@jamesphillipsuk.com>
+	*main.c: The bug I patched yesterday (causing the first character of a file to be deleted) was caused by writing to a non-existent memory address.  Although most compilers automatically ignore the this (hence the deletion) some versions of GCC try to write to memory they don't have, causing bugs even with the patch in place.  I removed the patch, identified the cause of the bug, and fixed that instead.
+
+	*CHANGELOG: Documented recent changes.
+
+2019-04-02 James Phillips <james@jamesphillipsuk.com>
 	*main.c: Added Up Arrow key functionality, it only works because I re-implemented the enter key so it fills unused space in each line of the terminal with a null character - which are stripped anyway in the saving function.
 	Added Left Arrow Key functionality.  It moves back one space.
 	With the addition of Right and down Arrow Keys, I have now completed the addition of arrow key functionality.
