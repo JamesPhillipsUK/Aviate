@@ -26,6 +26,7 @@
 #define CLEAR() printf("\e[2J\e[H");/*Output keycode to clear UNIX Terminal*/
 #define CLEARLN() printf("\e[2K\r");/*Output keycode to clear one line in UNIX Terminal*/
 #define  ALT_KEY_BACKSPACE 127/*The alternative keycode for Backspace.*/
+
 /** textFile will be a structured variable type used for storing text files to edit. **/
 typedef struct textFile
 {
@@ -33,6 +34,7 @@ typedef struct textFile
   int length;/* The length of *text. */
   int cursorPosition;/* A cursor position within the textFile. */
 } textFile;
+
 /** Prints the UI to the screen.  Title bar at the top, then top and bottom boundaries of the content area. **/
 void printUIFrame()
 {
@@ -43,6 +45,7 @@ void printUIFrame()
   printf("\033[24;0H╚══════════════════════════════════════════════════════════════════════════════╝");/* The content area. */
   printf("\033[5;0H");/* Move the cursor to the first space in the content area. */
 }
+
 /** This function prints an intro to Aviate to the screen. **/
 void printUIIntroduction()
 {
@@ -51,6 +54,7 @@ void printUIIntroduction()
   printf("\033[5;26H Welcome to Aviate Beta 1.0!\033[6;9H Aviate: the C-based text-editor designed for UNIX-like systems.\033[7;30H - by James Phillips.\033[8;19H Donate to me at: paypal.me/JamesPhillipsUK\033[23;27H Press [ENTER] to continue.");/* Give the user the chance to move on. */
   getchar();
 }
+
 /** This function prints the instructions on how to use Aviate to the screen. **/
 void printHowToNotice()
 {
@@ -59,6 +63,7 @@ void printHowToNotice()
   printf("\033[5;26H Welcome to Aviate Beta 1.0!\033[6;2H To use Aviate, follow these simple instructions, and you'll be on your way:\n 1| To start writing a new file, use the command: \"Aviate Write x.y\" in your\n     Bash terminal.\n 2| To read or write to a pre-existing file, use: \"Aviate Read x.y\".\n 3| Once Aviate has started, to cut your current line of text, use: \"[CTRL]+K\".\n     To paste, use: \"[CTRL]+U\".\n 4| To save your work, use: \"[F1]\".  To Exit, use \"[F2]\".\033[23;27H Press [ENTER] to continue.");/* Give the user the chance to move on. */
   getchar();
 }
+
 /** This function prints the copyright/left notice to the screen. **/
 void printCopyrightNotice()
 {
@@ -68,10 +73,11 @@ void printCopyrightNotice()
   printf("Aviate, created by James Phillips <james@jamesphillipsuk.com> on 3rd April 2016\n\n  Aviate is a terminal-based text-editor, designed for *Nix systems.\n\n  This program is free software: you can redistribute it and/or modify\n it under the terms of the GNU General Public License as published by\n the Free Software Foundation, either version 3 of the License, or\n (at your option) any later version.\n\n  This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU General Public License for more details.\n\n  You should have received a copy of the GNU General Public License\n along with this program.  If not, see <http://www.gnu.org/licenses/>.\033[23;25H Press [ENTER] to Exit.");/* Give the user the chance to exit. */
   getchar();
 }
+
 /** This prints the content of the file called by the user to the screen. **/
-void getFileContents(char (**fileNamePointer)[256], textFile *text)
+void getFileContents(char (*fileNamePointer)[256], textFile *text)
 {
-  FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "r");/* Read the file. */
+  FILE *filePointer = fopen(*(fileNamePointer + 0), "r");/* Read the file. */
   char c = '\0';
   if (filePointer == NULL)/* If it can't access, or find the file: */
   {
@@ -87,34 +93,37 @@ void getFileContents(char (**fileNamePointer)[256], textFile *text)
   }
   fclose(filePointer);/* Save the computer, close the file. */
 }
+
 /** This saves any given textFile to a file and saves the file. **/
-void saveFile(char (***fileNamePointer)[256], textFile **text)
+void saveFile(char (*fileNamePointer)[256], textFile *text)
 {
-  FILE *filePointer = fopen(**(fileNamePointer + 0 + 0)[0], "w");/* Open the file with write permission. */
+  FILE *filePointer = fopen(*(fileNamePointer + 0), "w");/* Open the file with write permission. */
   if (filePointer == NULL)
   {
     printf("Error opening file: %s!\n", strerror(errno));
     exit(EXIT_FAILURE);/* If the user can't edit the file (usually a permissions problem), throw that at them. */
   }
-  text[0]->cursorPosition = 0;/* Point to the start of the file. */
-  while (text[0]->length - 1 > text[0]->cursorPosition) /* Read through one char at a time. */
+  text->cursorPosition = 0;/* Point to the start of the file. */
+  while (text->length - 1 > text->cursorPosition) /* Read through one char at a time. */
   {
-    if (text[0]->text[text[0]->cursorPosition] != '\0')
-      fprintf(filePointer, "%c", text[0]->text[text[0]->cursorPosition]);
-    text[0]->cursorPosition++;
+    if (text->text[text->cursorPosition] != '\0')
+      fprintf(filePointer, "%c", text->text[text->cursorPosition]);
+    text->cursorPosition++;
   }
   fclose(filePointer);
 }
+
 /** Used to add chars from rewriteFile() to a given textFile variable. **/
-void addToTextFileStruct(char charToAdd, textFile **text)
+void addToTextFileStruct(char charToAdd, textFile *text)
 {
-  text[0]->length++;/* Add a char to it's length. */
-  text[0]->text = realloc(text[0]->text, text[0]->length + 1);/* Allocate the heap memory space needed for the char. */
-  text[0]->text[text[0]->cursorPosition] = charToAdd;/* Add the char to the textFile. */
-  text[0]->cursorPosition++;/* Move the cursor position along one char. */
+  text->length++;/* Add a char to it's length. */
+  text->text = realloc(text->text, text->length + 1);/* Allocate the heap memory space needed for the char. */
+  text->text[text->cursorPosition] = charToAdd;/* Add the char to the textFile. */
+  text->cursorPosition++;/* Move the cursor position along one char. */
 }
+
 /** This allows the user to edit text in a pre-existing file.  It can be one that has already been read, or one that has been written. **/
-void rewriteFile(char (**fileNamePointer)[256], textFile *text)
+void rewriteFile(char (*fileNamePointer)[256], textFile *text)
 {
   initscr();/* Initialise NCurses. */
   cbreak();/* Enable Character-at-a-time input. */
@@ -193,7 +202,7 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)
         }
         break;
       case KEY_F(1):/* If the user presses [F1] it will save the current textFile to a given filename. */
-        saveFile(&fileNamePointer, &text);
+        saveFile(fileNamePointer, text);
         break;
       case KEY_F(2):/* If the user presses [F2], they will exit.  It sets canBreak to true. */
         canBreak = true;
@@ -202,14 +211,14 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)
         for (int remainingChars = 79-x; remainingChars > 0; remainingChars--)/* Pad out any remaining space on the screen with null chars.  Same in the textFile.  We ignore them in the save function, so it doesn't make the filesize huge. */
         {
           addch('\0');
-          addToTextFileStruct('\0', &text);
+          addToTextFileStruct('\0', text);
         }
         addch('\n');
-        addToTextFileStruct('\n', &text);/* add a line break to the screen and textFile. */
+        addToTextFileStruct('\n', text);/* add a line break to the screen and textFile. */
         break;
       default:
         addch(input);/* Add the char to the screen. */
-        addToTextFileStruct(input, &text);/* Add the char to the textFile. */
+        addToTextFileStruct(input, text);/* Add the char to the textFile. */
         break;
     }
     refresh();
@@ -218,20 +227,22 @@ void rewriteFile(char (**fileNamePointer)[256], textFile *text)
   }
   endwin();/* Close out NCurses because we've stopped using it. */
 }
+
 /** This checks if a given file exists, and returns true if so. **/
-bool checkIfFileExists(char (***fileNamePointer)[256])
+bool checkIfFileExists(char (*fileNamePointer)[256])
 {
-  FILE *checkIfOpen = fopen(**(fileNamePointer + 0 + 0)[0], "r");
+  FILE *checkIfOpen = fopen(*(fileNamePointer + 0), "r");
   if (checkIfOpen == NULL) /* File does not exist.  Return false. */
     return false;
   fclose(checkIfOpen);/* File exists.  Return true. */
   return true;
 }
+
 /** Writes an empty file for us to edit. **/
-void writeFile(char (**fileNamePointer)[256])
+void writeFile(char (*fileNamePointer)[256])
 {
   char okayToOverwrite = 'N';/* Defaults to not deleting a file in case a user accidentally puts in a filename that exists already. */
-  if (!checkIfFileExists(&fileNamePointer))/* If the file doesn't exist, it's okay to write it. */
+  if (!checkIfFileExists(fileNamePointer))/* If the file doesn't exist, it's okay to write it. */
     okayToOverwrite = 'Y';
   else
   {
@@ -241,7 +252,7 @@ void writeFile(char (**fileNamePointer)[256])
   
   if (okayToOverwrite == 'Y' || okayToOverwrite == 'y')/* If the user explicitly tells us to overwrite the existing file, or there isn't an existing file. */
   {
-    FILE *filePointer = fopen(*(fileNamePointer + 0 + 0)[0], "a");/* Open the file with full privileges. */
+    FILE *filePointer = fopen(*(fileNamePointer + 0), "a");/* Open the file with full privileges. */
 
     if (filePointer == NULL)
     {
@@ -257,6 +268,7 @@ void writeFile(char (**fileNamePointer)[256])
     exit(EXIT_FAILURE);
   }
 }
+
 /** This sets initial values to a given textFile.  It also allocates any heap memory needed to do so. **/
 void initialiseTextFile(textFile *text)
 {
@@ -265,6 +277,7 @@ void initialiseTextFile(textFile *text)
   text->text = (char *) malloc(sizeof(char) * (text->length));/* Allocate memory space for 0 chars. */
   text->text[text->length] = '\0';/* Use a null char to initialise it. */
 }
+
 /** Handles what actions are taken when the user selects to read or write a file. **/
 void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePointer)[256])
 {
@@ -278,20 +291,21 @@ void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePoi
       break;
     case 2:/* Read a file for reading or editing. */
       CLEAR();
-      getFileContents(&fileNamePointer, &text);/* Move the file contents to our textFile. */
-      rewriteFile(&fileNamePointer, &text);/* Edit the textFile. */
+      getFileContents(fileNamePointer, &text);/* Move the file contents to our textFile. */
+      rewriteFile(fileNamePointer, &text);/* Edit the textFile. */
       CLEAR();
       break;
     case 3:/* Write a new file. */
       CLEAR();
-      writeFile(&fileNamePointer);/* Reserve the file for use. */
-      rewriteFile(&fileNamePointer, &text);/*Edit the textFile. */
+      writeFile(fileNamePointer);/* Reserve the file for use. */
+      rewriteFile(fileNamePointer, &text);/*Edit the textFile. */
       break;
     default:/* Unknown command. */
       printf("Please provide your command in the format: \"Aviate <operation> <filename>\".  Exiting.\n");
       break;
   }
 }
+
 /** Returns a short integer value corresponding to whether the user wants to read or write a file. **/
 short readWriteOrNothing(int *argc, char ***argv, char (*fileNamePointer)[256])
 {
