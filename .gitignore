@@ -6,3 +6,6 @@
 
 #Test files
 Aviate
+
+#Mac OS files
+.DS_Store
