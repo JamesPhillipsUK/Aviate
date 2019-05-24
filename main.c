@@ -16,16 +16,18 @@
  * Rewritten: December 2018 - April 2019
 **/
 
-#include <stdio.h> /*I/O Library*/
-#include <stdlib.h>/*Standard (File Handling) Library*/
-#include <stdbool.h>/*Standard Boolean Library*/
-#include <string.h>/*String Handling Library*/
-#include <errno.h>/*Error Handling Library*/
-#include <ncurses.h>/*NCurses (text editing interface) Library*/
+#include <stdio.h>/* I/O Library. */
+#include <stdlib.h>/* Standard (File Handling) Library. */
+#include <stdbool.h>/* Standard Boolean Library. */
+#include <string.h>/* String Handling Library. */
+#include <errno.h>/* Error Handling Library. */
+#include <ncurses.h>/* NCurses (text editing interface) Library. */
 
-#define CLEAR() printf("\e[2J\e[H");/*Output keycode to clear UNIX Terminal*/
-#define CLEARLN() printf("\e[2K\r");/*Output keycode to clear one line in UNIX Terminal*/
-#define  ALT_KEY_BACKSPACE 127/*The alternative keycode for Backspace.*/
+#define CLEAR() printf("\e[2J\e[H");/* Output keycode to clear UNIX Terminal */
+#define CLEARLN() printf("\e[2K\r");/* Output keycode to clear one line in UNIX Terminal */
+#define ALT_KEY_BACKSPACE 127/* The alternative keycode for Backspace. */
+#define SCRWIDTH COLS
+#define SCRHEIGHT LINES - 1
 
 /** textFile will be a structured variable type used for storing text files to edit. **/
 typedef struct textFile
@@ -51,7 +53,7 @@ void printUIIntroduction()
 {
   CLEAR();
   printUIFrame();/* Print our satndard UI. */
-  printf("\033[5;26H Welcome to Aviate Beta 1.0!\033[6;9H Aviate: the C-based text-editor designed for UNIX-like systems.\033[7;30H - by James Phillips.\033[8;19H Donate to me at: paypal.me/JamesPhillipsUK\033[23;27H Press [ENTER] to continue.");/* Give the user the chance to move on. */
+  printf("\033[5;26H Welcome to Aviate Beta 1.1!\033[6;9H Aviate: the C-based text-editor designed for UNIX-like systems.\033[7;30H - by James Phillips.\033[8;19H Donate to me at: paypal.me/JamesPhillipsUK\033[23;27H Press [ENTER] to continue.");/* Give the user the chance to move on. */
   getchar();
 }
 
@@ -128,14 +130,15 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
   initscr();/* Initialise NCurses. */
   cbreak();/* Enable Character-at-a-time input. */
   noecho();/* Don't auto-output to the screen.  I'll handle that. */
-  keypad(stdscr, TRUE);/* Take special key inputs as well. */
+  WINDOW *textEdit = newwin(SCRHEIGHT - 2, SCRWIDTH, 0,0);
+  keypad(textEdit, TRUE);/* Take special key inputs as well. */
   text->cursorPosition = 0;
   if (text->length != 0)
   {
-    while (text->length > text->cursorPosition) /* Read through whatever we've already got in the textFile. */
+    while (text->length > text->cursorPosition)/* Read through whatever we've already got in the textFile. */
     {
-      addch(text->text[text->cursorPosition]);/* Put the char on the screen. */
-      refresh();
+      waddch(textEdit, text->text[text->cursorPosition]);/* Put the char on the screen. */
+      wrefresh(textEdit);
       text->cursorPosition++;
     }
     text->cursorPosition = text->length - 1;
@@ -143,25 +146,25 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
   for(;;)/* We'll process text indefinitely, or until this loop is broken out of. */
   {
     bool canBreak = false;/* Used to process text indefinitely, until this value is true. */
-    int input = getch();
-    int y = getcury(stdscr);/* Current cursor y co-ordinate. */
-    int x = getcurx(stdscr);/* Current cursor x co-ordinate. */
+    int input = wgetch(textEdit);
+    int y = getcury(textEdit); /* Current cursor y co-ordinate. */
+    int x = getcurx(textEdit); /* Current cursor x co-ordinate. */
     switch(input)
     {
       case KEY_UP:/* If the user presses the Up Arrow, move the cursor up respectively. */
         if (y > 0)
         {
-          move(y - 1, x);
-          text->cursorPosition -= 80;
-          refresh();
+          wmove(textEdit, y - 1, x);
+          text->cursorPosition -= SCRWIDTH;
+          wrefresh(textEdit);
         }
         break;
       case KEY_DOWN:/* If the user presses the Down Arrow, move the cursor down respectively. */
-        if (text->cursorPosition < text->length - 80 && mvinch(y + 1, x) != '\0' && !(y >= 24))
+        if (text->cursorPosition < text->length - SCRWIDTH && mvinch(y + 1, x) != '\0' && !(y >= SCRHEIGHT - 2))
         {
-          move(y + 1, x);
-          text->cursorPosition += 80;
-          refresh();
+          wmove(textEdit, y + 1, x);
+          text->cursorPosition += SCRWIDTH;
+          wrefresh(textEdit);
         }
         break;
       case KEY_LEFT:/* If the user presses the Left Arrow, move the cursor left respectively. */
@@ -170,35 +173,35 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
         else
         {
           y--;
-          x = 79;
+          x = SCRWIDTH - 1;
         }
-        move(y, x);
+        wmove(textEdit, y, x);
         text->cursorPosition--;
-        refresh();
+        wrefresh(textEdit);
         break;
       case KEY_RIGHT:/* If the user presses the Right Arrow, move the cursor right respectively. */
-        if (text->cursorPosition < text->length && mvinch(y, x + 1) != '\0' && !(x >= 79))
+        if (text->cursorPosition < text->length && mvinch(y, x + 1) != '\0' && !(x >= SCRWIDTH - 1))
         {
-          move(y, x + 1);
+          wmove(textEdit, y, x + 1);
           text->cursorPosition++;
-          refresh();
+          wrefresh(textEdit);
         }
-        else if(x>=79)/* If we're at the end of the line, move onto the next one. */
+        else if(x >= SCRWIDTH - 1)/* If we're at the end of the line, move onto the next one. */
         {
-          move(y + 1, 0);
+          wmove(textEdit, y + 1, 0);
           text->cursorPosition++;
-          refresh();
+          wrefresh(textEdit);
         }
         break;
       case KEY_BACKSPACE:/* If the user presses [BACKSPACE], go back one space on both the screen and the textFile, and delete the char they've backspaced over. */
       case ALT_KEY_BACKSPACE:
         if(x > 0)
         {
-          move(y, x - 1);
-          delch();
+          wmove(textEdit, y, x - 1);
+          wdelch(textEdit);
           text->cursorPosition--;
           text->text[text->cursorPosition] = '\0';
-          refresh();
+          wrefresh(textEdit);
         }
         break;
       case KEY_F(1):/* If the user presses [F1] it will save the current textFile to a given filename. */
@@ -208,23 +211,24 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
         canBreak = true;
         break;
       case KEY_ENTER:/* If the user presses [ENTER]: */
-        for (int remainingChars = 79-x; remainingChars > 0; remainingChars--)/* Pad out any remaining space on the screen with null chars.  Same in the textFile.  We ignore them in the save function, so it doesn't make the filesize huge. */
+        for (int remainingChars = SCRWIDTH - 1 - x; remainingChars > 0; remainingChars--)/* Pad out any remaining space on the screen with null chars.  Same in the textFile.  We ignore them in the save function, so it doesn't make the filesize huge. */
         {
-          addch('\0');
+          waddch(textEdit, '\0');
           addToTextFileStruct('\0', text);
         }
-        addch('\n');
+        waddch(textEdit, '\n');
         addToTextFileStruct('\n', text);/* add a line break to the screen and textFile. */
         break;
       default:
-        addch(input);/* Add the char to the screen. */
+        waddch(textEdit, input);/* Add the char to the screen. */
         addToTextFileStruct(input, text);/* Add the char to the textFile. */
         break;
     }
-    refresh();
+    wrefresh(textEdit);
     if (canBreak == true)/* Only if the user's told us they want to exit, we exit. */
       break;
   }
+  delwin(textEdit);
   endwin();/* Close out NCurses because we've stopped using it. */
 }
 
