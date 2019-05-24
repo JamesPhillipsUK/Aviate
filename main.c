@@ -32,10 +32,10 @@
 /** textFile will be a structured variable type used for storing text files to edit. **/
 typedef struct textFile
 {
-  char *text;/* Pointer to a memory location containing chars we've stored.  Used as a dynamic array. */
   int length;/* The length of *text. */
   int cursorPosition;/* A cursor position within the textFile. */
-} textFile;
+  char *text;/* Pointer to a memory location containing chars we've stored.  Used as a dynamic array. */
+} __attribute__((packed)) textFile;
 
 /** Prints the UI to the screen.  Title bar at the top, then top and bottom boundaries of the content area. **/
 void printUIFrame()
@@ -106,7 +106,7 @@ void saveFile(char (*fileNamePointer)[256], textFile *text)
     exit(EXIT_FAILURE);/* If the user can't edit the file (usually a permissions problem), throw that at them. */
   }
   text->cursorPosition = 0;/* Point to the start of the file. */
-  while (text->length - 1 > text->cursorPosition) /* Read through one char at a time. */
+  while (text->length - 1 >= text->cursorPosition) /* Read through one char at a time. */
   {
     if (text->text[text->cursorPosition] != '\0')
       fprintf(filePointer, "%c", text->text[text->cursorPosition]);
@@ -296,6 +296,7 @@ void handleReadWriteOrNothing(short readWriteOrNothingOutput, char (*fileNamePoi
     case 2:/* Read a file for reading or editing. */
       CLEAR();
       getFileContents(fileNamePointer, &text);/* Move the file contents to our textFile. */
+      text.length--;
       rewriteFile(fileNamePointer, &text);/* Edit the textFile. */
       CLEAR();
       break;
