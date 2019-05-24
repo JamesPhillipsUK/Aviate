@@ -22,12 +22,13 @@
 #include <string.h>/* String Handling Library. */
 #include <errno.h>/* Error Handling Library. */
 #include <ncurses.h>/* NCurses (text editing interface) Library. */
+#include <unistd.h>/* Misc. constants and functions.  Needed for usleep(). */
 
 #define CLEAR() printf("\e[2J\e[H");/* Output keycode to clear UNIX Terminal */
 #define CLEARLN() printf("\e[2K\r");/* Output keycode to clear one line in UNIX Terminal */
 #define ALT_KEY_BACKSPACE 127/* The alternative keycode for Backspace. */
 #define SCRWIDTH COLS
-#define SCRHEIGHT LINES - 1
+#define SCRHEIGHT LINES
 
 /** textFile will be a structured variable type used for storing text files to edit. **/
 typedef struct textFile
@@ -124,14 +125,54 @@ void addToTextFileStruct(char charToAdd, textFile *text)
   text->cursorPosition++;/* Move the cursor position along one char. */
 }
 
+/** This updates the info panel at the bottom of the screen with the application's current status. **/
+void updateInfoPanel(WINDOW *infoPanel, char *status)
+{
+  if (has_colors())
+  {
+    wbkgd(infoPanel, COLOR_PAIR(1));
+    wrefresh(infoPanel);
+  }
+  if (strcmp(status, "ready") == 0)
+  {
+    mvwprintw(infoPanel, 1, 0, "Aviate: Prepared for liftoff!");
+    wrefresh(infoPanel);
+  }
+  else if (strcmp(status, "save") == 0)
+  {
+    mvwprintw(infoPanel, 1, 0, "Aviate: Saving file...       ");
+    wrefresh(infoPanel);
+    usleep(1000000);
+    updateInfoPanel(infoPanel, "ready");
+  }
+  else if (strcmp(status, "save") == 0)
+  {
+    mvwprintw(infoPanel, 1, 0, "Aviate: Exiting...           ");
+    wrefresh(infoPanel);
+    usleep(1000000);
+  }
+}
+
 /** This allows the user to edit text in a pre-existing file.  It can be one that has already been read, or one that has been written. **/
 void rewriteFile(char (*fileNamePointer)[256], textFile *text)
 {
   initscr();/* Initialise NCurses. */
   cbreak();/* Enable Character-at-a-time input. */
   noecho();/* Don't auto-output to the screen.  I'll handle that. */
-  WINDOW *textEdit = newwin(SCRHEIGHT - 2, SCRWIDTH, 0,0);
+
+  WINDOW *textEdit = newwin(SCRHEIGHT - 2, SCRWIDTH, 0, 0);
+  WINDOW *infoPanel = newwin(2, SCRWIDTH, SCRHEIGHT - 2, 0);
   keypad(textEdit, TRUE);/* Take special key inputs as well. */
+
+  if (has_colors())
+  {
+    start_color();
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    use_default_colors();
+    wrefresh(textEdit);
+  }
+  updateInfoPanel(infoPanel, "ready");
+  wmove(textEdit, 0, 0);
   text->cursorPosition = 0;
   if (text->length != 0)
   {
@@ -160,7 +201,7 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
         }
         break;
       case KEY_DOWN:/* If the user presses the Down Arrow, move the cursor down respectively. */
-        if (text->cursorPosition < text->length - SCRWIDTH && mvinch(y + 1, x) != '\0' && !(y >= SCRHEIGHT - 2))
+        if (text->cursorPosition < text->length - SCRWIDTH && mvinch(y + 1, x) != '\0' && !(y >= SCRHEIGHT - 3))
         {
           wmove(textEdit, y + 1, x);
           text->cursorPosition += SCRWIDTH;
@@ -206,8 +247,12 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
         break;
       case KEY_F(1):/* If the user presses [F1] it will save the current textFile to a given filename. */
         saveFile(fileNamePointer, text);
+        updateInfoPanel(infoPanel, "save");
+        wmove(textEdit, y, x);
         break;
       case KEY_F(2):/* If the user presses [F2], they will exit.  It sets canBreak to true. */
+        updateInfoPanel(infoPanel, "exit");
+        wmove(textEdit, y, x);
         canBreak = true;
         break;
       case KEY_ENTER:/* If the user presses [ENTER]: */
@@ -317,7 +362,7 @@ short readWriteOrNothing(int *argc, char ***argv, char (*fileNamePointer)[256])
   short returnVal = 0;
   if (*argc == 1)/* If the user hasn't passed any arguments, fill the filename with null characters. */
   {
-    for (int count = 0; count < 256; count++)
+    for (short count = 0; count < 256; count++)
       (*fileNamePointer)[count] = '\0';
     returnVal = 1;
   }
@@ -329,7 +374,7 @@ short readWriteOrNothing(int *argc, char ***argv, char (*fileNamePointer)[256])
       returnVal = 3;
     else
       printf("%s is not a known command.  Try Read or Write.\n", argv[0][1]);/* Deal with GIGO case. */
-    for (int count = 0; count < 256; count++)
+    for (short count = 0; count < 256; count++)
       (*fileNamePointer)[count] = argv[0][2][count];/* Assign the given filename to our fileName array in main(). */
   }
   return returnVal;
