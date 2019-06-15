@@ -54,7 +54,7 @@ void printUIIntroduction()
 {
   CLEAR();
   printUIFrame();/* Print our satndard UI. */
-  printf("\033[5;26H Welcome to Aviate Beta 1.1!\033[6;9H Aviate: the C-based text-editor designed for UNIX-like systems.\033[7;30H - by James Phillips.\033[8;19H Donate to me at: paypal.me/JamesPhillipsUK\033[23;27H Press [ENTER] to continue.");/* Give the user the chance to move on. */
+  printf("\033[5;26H Welcome to Aviate Beta 1.1!\033[6;9H Aviate: the C-based text-editor designed for UNIX-like systems.\033[7;30H - by James Phillips.\033[8;19H Donate to me at: paypal.me/JamesPhillipsUK\033[23;27H Press [ENTER] to continue."); /* Give the user the chance to move on. */
   getchar();
 }
 
@@ -63,7 +63,7 @@ void printHowToNotice()
 {
   CLEAR();
   printUIFrame();/* Print our standard UI. */
-  printf("\033[5;26H Welcome to Aviate Beta 1.0!\033[6;2H To use Aviate, follow these simple instructions, and you'll be on your way:\n 1| To start writing a new file, use the command: \"Aviate Write x.y\" in your\n     Bash terminal.\n 2| To read or write to a pre-existing file, use: \"Aviate Read x.y\".\n 3| Once Aviate has started, to cut your current line of text, use: \"[CTRL]+K\".\n     To paste, use: \"[CTRL]+U\".\n 4| To save your work, use: \"[F1]\".  To Exit, use \"[F2]\".\033[23;27H Press [ENTER] to continue.");/* Give the user the chance to move on. */
+  printf("\033[5;26H Welcome to Aviate Beta 1.1!\033[6;2H To use Aviate, follow these simple instructions, and you'll be on your way:\n 1| To start writing a new file, use the command: \"Aviate Write x.y\" in your\n     Bash terminal.\n 2| To read or write to a pre-existing file, use: \"Aviate Read x.y\".\n 3| Once Aviate has started, to cut your current line of text, use: \"[CTRL]+K\".\n     To paste, use: \"[CTRL]+U\".\n 4| To save your work, use: \"[F1]\".  To Exit, use \"[F2]\".\033[23;27H Press [ENTER] to continue."); /* Give the user the chance to move on. */
   getchar();
 }
 
@@ -142,14 +142,14 @@ void updateInfoPanel(WINDOW *infoPanel, char *status)
   {
     mvwprintw(infoPanel, 1, 0, "Aviate: Saving file...       ");
     wrefresh(infoPanel);
-    usleep(100000);
+    usleep(500000);
     updateInfoPanel(infoPanel, "ready");
   }
   else if (strcmp(status, "exit") == 0)
   {
     mvwprintw(infoPanel, 1, 0, "Aviate: Exiting...           ");
     wrefresh(infoPanel);
-    usleep(100000);
+    usleep(500000);
   }
 }
 
@@ -162,6 +162,8 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
 
   WINDOW *textEdit = newwin(SCRHEIGHT - 2, SCRWIDTH, 0, 0);
   WINDOW *infoPanel = newwin(2, SCRWIDTH, SCRHEIGHT - 2, 0);
+  int y = getcury(textEdit);/* Current cursor y co-ordinate. */
+  int x = getcurx(textEdit);/* Current cursor x co-ordinate. */
   keypad(textEdit, TRUE);/* Take special key inputs as well. */
 
   if (has_colors())
@@ -182,14 +184,15 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
       wrefresh(textEdit);
       text->cursorPosition++;
     }
+    text->length++;
     text->cursorPosition = text->length - 1;
   }
+  //if (x > 0)
+  //  wmove(textEdit, y, x - 1);
   for(;;)/* We'll process text indefinitely, or until this loop is broken out of. */
   {
     bool canBreak = false;/* Used to process text indefinitely, until this value is true. */
     int input = wgetch(textEdit);
-    int y = getcury(textEdit); /* Current cursor y co-ordinate. */
-    int x = getcurx(textEdit); /* Current cursor x co-ordinate. */
     switch(input)
     {
       case KEY_UP:/* If the user presses the Up Arrow, move the cursor up respectively. */
