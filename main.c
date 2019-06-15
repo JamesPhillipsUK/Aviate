@@ -142,14 +142,14 @@ void updateInfoPanel(WINDOW *infoPanel, char *status)
   {
     mvwprintw(infoPanel, 1, 0, "Aviate: Saving file...       ");
     wrefresh(infoPanel);
-    usleep(1000000);
+    usleep(100000);
     updateInfoPanel(infoPanel, "ready");
   }
-  else if (strcmp(status, "save") == 0)
+  else if (strcmp(status, "exit") == 0)
   {
     mvwprintw(infoPanel, 1, 0, "Aviate: Exiting...           ");
     wrefresh(infoPanel);
-    usleep(1000000);
+    usleep(100000);
   }
 }
 
