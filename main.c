@@ -110,7 +110,7 @@ void saveFile(char (*fileNamePointer)[256], textFile *text)
   while (text->length - 1 >= text->cursorPosition) /* Read through one char at a time. */
   {
     if (text->text[text->cursorPosition] != '\0')
-      fprintf(filePointer, "%c", text->text[text->cursorPosition]);
+      fprintf(filePointer, "%c", text->text[text->cursorPosition]);/* Send all non-null content to the file. */
     text->cursorPosition++;
   }
   fclose(filePointer);
@@ -130,24 +130,24 @@ void updateInfoPanel(WINDOW *infoPanel, char *status)
 {
   if (has_colors())
   {
-    wbkgd(infoPanel, COLOR_PAIR(1));
+    wbkgd(infoPanel, COLOR_PAIR(1));/* Initialise the green-on-black colour scheme. */
     wrefresh(infoPanel);
   }
   if (strcmp(status, "ready") == 0)
   {
-    mvwprintw(infoPanel, 1, 0, "Aviate: Prepared for liftoff!");
+    mvwprintw(infoPanel, 1, 0, "Aviate: Prepared for liftoff!");/* Set info panel contents when given the ready signal. */
     wrefresh(infoPanel);
   }
   else if (strcmp(status, "save") == 0)
   {
-    mvwprintw(infoPanel, 1, 0, "Aviate: Saving file...       ");
+    mvwprintw(infoPanel, 1, 0, "Aviate: Saving file...       ");/* Set info panel contents when given the save signal. */
     wrefresh(infoPanel);
     usleep(500000);
     updateInfoPanel(infoPanel, "ready");
   }
   else if (strcmp(status, "exit") == 0)
   {
-    mvwprintw(infoPanel, 1, 0, "Aviate: Exiting...           ");
+    mvwprintw(infoPanel, 1, 0, "Aviate: Exiting...           ");/* Set info panel contents when given the exit signal. */
     wrefresh(infoPanel);
     usleep(500000);
   }
@@ -169,12 +169,12 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
   if (has_colors())
   {
     start_color();
-    init_pair(1, COLOR_GREEN, COLOR_BLACK);
-    use_default_colors();
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);/* Initialise the colour scheme for the info panel. */
+    use_default_colors();/* The text editor will use the user's preferred colour scheme. */
     wrefresh(textEdit);
   }
   updateInfoPanel(infoPanel, "ready");
-  wmove(textEdit, 0, 0);
+  wmove(textEdit, 0, 0);/* Start in the top left corner of the text editor window. */
   text->cursorPosition = 0;
   if (text->length != 0)
   {
@@ -187,8 +187,6 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
     text->length++;
     text->cursorPosition = text->length - 1;
   }
-  //if (x > 0)
-  //  wmove(textEdit, y, x - 1);
   for(;;)/* We'll process text indefinitely, or until this loop is broken out of. */
   {
     bool canBreak = false;/* Used to process text indefinitely, until this value is true. */
