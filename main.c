@@ -162,8 +162,8 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
 
   WINDOW *textEdit = newwin(SCRHEIGHT - 2, SCRWIDTH, 0, 0);
   WINDOW *infoPanel = newwin(2, SCRWIDTH, SCRHEIGHT - 2, 0);
-  int y = getcury(textEdit);/* Current cursor y co-ordinate. */
-  int x = getcurx(textEdit);/* Current cursor x co-ordinate. */
+  //int y = getcury(textEdit);/* Current cursor y co-ordinate. */
+  //int x = getcurx(textEdit);/* Current cursor x co-ordinate. */
   keypad(textEdit, TRUE);/* Take special key inputs as well. */
 
   if (has_colors())
@@ -191,6 +191,8 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
   {
     bool canBreak = false;/* Used to process text indefinitely, until this value is true. */
     int input = wgetch(textEdit);
+    int y = getcury(textEdit);/* Current cursor y co-ordinate. */
+    int x = getcurx(textEdit);/* Current cursor x co-ordinate. */
     switch(input)
     {
       case KEY_UP:/* If the user presses the Up Arrow, move the cursor up respectively. */
