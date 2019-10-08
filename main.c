@@ -125,6 +125,20 @@ void addToTextFileStruct(char charToAdd, textFile *text)
   text->cursorPosition++;/* Move the cursor position along one char. */
 }
 
+void removeFromTextFileStruct(textFile *text)
+{
+  int curPosition = text->cursorPosition;
+  while (text->cursorPosition < text->length)
+  {
+    text->text[text->cursorPosition] = text->text[text->cursorPosition + 1];
+    text->cursorPosition++;
+  }
+  text->cursorPosition = curPosition;
+  text->text[text->length] = '\0';
+  text->length--;
+  text->text = realloc(text->text, text->length);
+}
+
 /** This updates the info panel at the bottom of the screen with the application's current status. **/
 void updateInfoPanel(WINDOW *infoPanel, char *status)
 {
@@ -162,8 +176,6 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
 
   WINDOW *textEdit = newwin(SCRHEIGHT - 2, SCRWIDTH, 0, 0);
   WINDOW *infoPanel = newwin(2, SCRWIDTH, SCRHEIGHT - 2, 0);
-  //int y = getcury(textEdit);/* Current cursor y co-ordinate. */
-  //int x = getcurx(textEdit);/* Current cursor x co-ordinate. */
   keypad(textEdit, TRUE);/* Take special key inputs as well. */
 
   if (has_colors())
@@ -239,14 +251,19 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
         break;
       case KEY_BACKSPACE:/* If the user presses [BACKSPACE], go back one space on both the screen and the textFile, and delete the char they've backspaced over. */
       case ALT_KEY_BACKSPACE:
-        if(x > 0)
+        if (x > 0)
+          x--;
+        else
         {
-          wmove(textEdit, y, x - 1);
-          wdelch(textEdit);
-          text->cursorPosition--;
-          text->text[text->cursorPosition] = '\0';
-          wrefresh(textEdit);
+          y--;
+          x = SCRWIDTH - 1;
         }
+        wmove(textEdit, y, x);
+        wdelch(textEdit);
+        wmove(textEdit, y, x);
+        text->cursorPosition--;
+        removeFromTextFileStruct(text);
+        wrefresh(textEdit);
         break;
       case KEY_F(1):/* If the user presses [F1] it will save the current textFile to a given filename. */
         saveFile(fileNamePointer, text);
