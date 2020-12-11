@@ -90,6 +90,16 @@ void getFileContents(char (*fileNamePointer)[256], textFile *text)
   while (c != EOF)/* Read the file to the textFile. */
   {
     c = fgetc(filePointer);/* Get a char from the file. */
+    if (c == '\n' && !(text->cursorPosition % (SCRWIDTH - 1) == 0))
+    {
+      while (text->cursorPosition < SCRWIDTH - 2)
+      {
+        text->length++;/* Add a char to it's length. */
+        text->text = realloc(text->text, text->length + 1);/* Allocate the heap memory space needed for the char. */
+        text->text[text->cursorPosition] = '_';/* Add the char to the textFile. */
+        text->cursorPosition++;/* Move the cursor position along one char. */
+      }
+    }
     text->text = realloc(text->text, text->length + 1);/* Ask for some heap space for another char. */
     text->text[text->length] = c;/* Add the char to our textFile variable. */
     text->length++;/* Increment the textFile's length. */
@@ -276,10 +286,10 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
         canBreak = true;
         break;
       case KEY_ENTER:/* If the user presses [ENTER]: */
-        for (int remainingChars = SCRWIDTH - 1 - x; remainingChars > 0; remainingChars--)/* Pad out any remaining space on the screen with null chars.  Same in the textFile.  We ignore them in the save function, so it doesn't make the filesize huge. */
+        for (int remainingChars = (SCRWIDTH - 1) - x; remainingChars > 0; remainingChars--)/* Pad out any remaining space on the screen with null chars.  Same in the textFile.  We ignore them in the save function, so it doesn't make the filesize huge. */
         {
-          waddch(textEdit, '\0');
-          addToTextFileStruct('\0', text);
+          waddch(textEdit, 'o'); // NEVER ENTERS LOOP - WHY???
+          addToTextFileStruct('o', text);
         }
         waddch(textEdit, '\n');
         addToTextFileStruct('\n', text);/* add a line break to the screen and textFile. */
