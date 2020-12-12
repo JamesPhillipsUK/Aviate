@@ -3,18 +3,18 @@ CC = gcc
 
 # compiler flags
 # Dev
-CFLAGS = -std=gnu11 -Wall -o
+# CFLAGS = -std=gnu11 -Wall -o
 # Release
-#CFLAGS = -std=gnu11 -o
+CFLAGS = -std=gnu11 -o
 
 # the build target executable:
 # Dev
-TARGET = ./Aviate
+# TARGET = ./Aviate
 # Release
-#TARGET = /usr/bin/MyProg
-#TARGET = /usr/bin/myprog
-#TARGET = /usr/bin/Aviate
-#TARGET = /usr/bin/aviate
+TARGET = /usr/bin/MyProg
+TARGET = /usr/bin/myprog
+TARGET = /usr/bin/Aviate
+TARGET = /usr/bin/aviate
 
 # the libraries linked to the program:
 LINKS = -lncurses
