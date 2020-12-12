@@ -1,8 +1,8 @@
 /**
- * Aviate, created by James Phillips <james@jamesphillipsuk.com> 2016 - 2019.  
+ * Aviate, created by Jesse Phillips <james@jamesphillipsuk.com> 2016 - 2020.  
  * Aviate is a terminal-based text-editor, designed for *Nix systems.  
  * 
- * Copyright (C) 2016, 2019 James Phillips, Released under the GNU GPL v3.0 or later.
+ * Copyright (C) 2016 Jesse Phillips, Released under the GNU GPL v3.0 or later.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the License, 
@@ -13,11 +13,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  * Initially created: April 2016
- * Rewritten: December 2018 - April 2019
+ * Rewritten: December 2018 - December 2020
 **/
 
 #include <stdio.h>/* I/O Library. */
-#include <stdlib.h>/* Standard (File Handling) Library. */
+#include <stdlib.h>/* Standard Library - incl. File Handling. */
 #include <stdbool.h>/* Standard Boolean Library. */
 #include <string.h>/* String Handling Library. */
 #include <errno.h>/* Error Handling Library. */
@@ -27,6 +27,7 @@
 #define CLEAR() printf("\e[2J\e[H");/* Output keycode to clear UNIX Terminal */
 #define CLEARLN() printf("\e[2K\r");/* Output keycode to clear one line in UNIX Terminal */
 #define ALT_KEY_BACKSPACE 127/* The alternative keycode for Backspace. */
+#define ALT_KEY_ENTER 10/* The alternative keycode for Enter. */
 #define SCRWIDTH COLS
 #define SCRHEIGHT LINES
 
@@ -184,8 +185,8 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
   cbreak();/* Enable Character-at-a-time input. */
   noecho();/* Don't auto-output to the screen.  I'll handle that. */
 
-  WINDOW *textEdit = newwin(SCRHEIGHT - 2, SCRWIDTH, 0, 0);
-  WINDOW *infoPanel = newwin(2, SCRWIDTH, SCRHEIGHT - 2, 0);
+  WINDOW *textEdit = newwin(SCRHEIGHT - 2, SCRWIDTH, 0, 0);/* Text editor window. */
+  WINDOW *infoPanel = newwin(2, SCRWIDTH, SCRHEIGHT - 2, 0);/* Information window. */
   keypad(textEdit, TRUE);/* Take special key inputs as well. */
 
   if (has_colors())
@@ -286,10 +287,11 @@ void rewriteFile(char (*fileNamePointer)[256], textFile *text)
         canBreak = true;
         break;
       case KEY_ENTER:/* If the user presses [ENTER]: */
-        for (int remainingChars = (SCRWIDTH - 1) - x; remainingChars > 0; remainingChars--)/* Pad out any remaining space on the screen with null chars.  Same in the textFile.  We ignore them in the save function, so it doesn't make the filesize huge. */
+      case ALT_KEY_ENTER:
+        for (int remainingChars = (SCRWIDTH - 1) - x; remainingChars > 0; remainingChars--)/* Pad out any remaining space on the screen.  Same in the textFile. */
         {
-          waddch(textEdit, 'o'); // NEVER ENTERS LOOP - WHY???
-          addToTextFileStruct('o', text);
+          waddch(textEdit, ' ');/* Pad the screen with spaces.  We'd use \0's ideally, but some terminal emulators render that on-screen as ^@. */
+          addToTextFileStruct('\0', text);/* Pad the textFile with \0's.  We ignore them in the save function, so it doesn't make the filesize huge. */
         }
         waddch(textEdit, '\n');
         addToTextFileStruct('\n', text);/* add a line break to the screen and textFile. */
